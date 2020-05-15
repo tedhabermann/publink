@@ -1,12 +1,13 @@
 """Update DOI with new related pubs."""
-
-# Import packages
-import os
 import getpass
+import os
+
 from usgs_datatools import doi as doi_tool
 
+# Import packages
 
-class UpdateDoi():
+
+class UpdateDoi:
     """Class for updaing DOI relationships in USGS DOI Tool."""
 
     def __init__(self, doi, related_dois, session, doi_relation="IS_CITED_BY"):
@@ -49,10 +50,9 @@ class UpdateDoi():
         if len(self.relatedIdentifiers) == 0:
             self.build_update_json()
         else:
-            content_related_dois = list(set([
-                i['relatedIdentifier'] for i
-                in self.relatedIdentifiers
-                ]))
+            content_related_dois = list(
+                set([i["relatedIdentifier"] for i in self.relatedIdentifiers])
+            )
             keep_dois = []
             for related_doi in self.related_dois:
                 doi_url = f"https://doi.org/{related_doi}"
@@ -78,7 +78,7 @@ class UpdateDoi():
             update_json = {
                 "relatedIdentifier": (doi_url),
                 "dataciteRelationType": self.doi_relation,
-                "relatedIdentifierType": "DOI"
+                "relatedIdentifierType": "DOI",
             }
             self.update_doi_json.append(update_json)
 

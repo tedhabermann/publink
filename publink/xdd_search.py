@@ -1,14 +1,16 @@
 """Extract info from eXtract Dark Data (xDD) (https://geodeepdive.org/)."""
-
-# Import packages
-import requests
-import bs4
 # import BeautifulSoup
 import re
+
+import bs4
+import requests
+
 from publink import publink
 
+# Import packages
 
-class SearchXdd():
+
+class SearchXdd:
     """Class allowing for searching of xDD publication database."""
 
     def __init__(self, search_terms="10.5066", route="snippets"):
@@ -99,23 +101,23 @@ class SearchXdd():
                 self.next_url = ""
                 if r.status_code == 200 and "success" not in r.json():
                     self.response_status = "no data"
-                    self.response_message = f"Request returned no data. \
+                    self.response_message = "Request returned no data. \
                         Verify request is valid."
                 elif r.status_code != 200:
                     self.response_status = "error"
-                    self.response_message = f"Request returned status code: \
+                    self.response_message = "Request returned status code: \
                         {r.status_code}."
                     break
                 else:
                     self.response_status = "error"
-                    self.response_message = f"Unknown error."
+                    self.response_message = "Unknown error."
                     break
 
         if self.response_status == "success":
             self.response_hits += response_hits
 
 
-class GetDoiMentions():
+class GetDoiMentions:
     """Class extracting DOI mentions from xDD snippets."""
 
     def __init__(self, xdd_response, search_terms=["10.5066"]):
@@ -152,16 +154,17 @@ class GetDoiMentions():
             if "doi" in ref.keys() and ref["doi"] != "":
                 pub_doi = publink.doi_formatting(ref["doi"])
                 for hl in ref["highlight"]:
-                    pairs = [{"pub_doi": pub_doi,
-                              "data_doi": i
-                              } for i in self.search_terms if i in hl
-                             ]
+                    pairs = [
+                        {"pub_doi": pub_doi, "data_doi": i}
+                        for i in self.search_terms
+                        if i in hl
+                    ]
                     self.related_dois.extend(pairs)
 
         # Remove duplicate pairs
         self.related_dois = [
-                dict(t) for t in {tuple(d.items()) for d in self.related_dois}
-                ]
+            dict(t) for t in {tuple(d.items()) for d in self.related_dois}
+        ]
 
     def get_usgs_doi_mentions(self):
         """Pair publication with match of full DOI.
@@ -178,28 +181,33 @@ class GetDoiMentions():
                 for hl in ref["highlight"]:
                     hl = clean_highlight(hl, self.search_terms, prefix)
                     # string to list for index of words
-                    hl_words = hl.split(' ')
+                    hl_words = hl.split(" ")
                     # get words from snippet with search prefix
-                    have_prefix = list(set([
-                        hl_word for hl_word in hl_words
-                        if prefix in hl_word
-                    ]))
+                    have_prefix = list(
+                        set(
+                            [
+                                hl_word
+                                for hl_word in hl_words
+                                if prefix in hl_word
+                            ]
+                        )
+                    )
 
                     for mention in have_prefix:
                         doi, doi_certainty = extract_usgs_doi(
                             hl_words, mention
-                            )
+                        )
                         if doi is not None:
                             pair = {"pub_doi": pub_doi, "data_doi": doi}
                             self.related_dois.append(pair)
 
         # Remove duplicate pairs
         self.related_dois = [
-                dict(t) for t in {tuple(d.items()) for d in self.related_dois}
-                ]
+            dict(t) for t in {tuple(d.items()) for d in self.related_dois}
+        ]
 
 
-def clean_highlight(highlight_txt, search_terms, usgs_prefix='10.5066'):
+def clean_highlight(highlight_txt, search_terms, usgs_prefix="10.5066"):
     """Clean xDD highlight text.
 
     Parameters
@@ -217,20 +225,18 @@ def clean_highlight(highlight_txt, search_terms, usgs_prefix='10.5066'):
     """
     highlight_txt = highlight_txt.upper()
     hl_nohtml = bs4.BeautifulSoup(
-        highlight_txt, features="html.parser").get_text()
+        highlight_txt, features="html.parser"
+    ).get_text()
     hl_clean = clean_unicode(hl_nohtml)
 
-    included_terms = [
-        i.upper() for i in search_terms
-        if i in hl_clean
-    ]
+    included_terms = [i.upper() for i in search_terms if i in hl_clean]
     for term in included_terms:
         hl_clean = hl_clean.replace(term, usgs_prefix)
 
     return hl_clean
 
 
-def extract_usgs_doi(hl_words, mention, usgs_prefix='10.5066'):
+def extract_usgs_doi(hl_words, mention, usgs_prefix="10.5066"):
     """Extract DOI string from xDD highlight.
 
     Parameters
@@ -264,7 +270,7 @@ def extract_usgs_doi(hl_words, mention, usgs_prefix='10.5066'):
         doi_certainty = "less certain"
     else:
         i = hl_words.index(mention)
-        while (len(hl_words) > i+1) and doi is None:
+        while (len(hl_words) > i + 1) and doi is None:
             test = f"{test}{hl_words[i+1]}"
             if len(test) == 16:
                 doi_certainty = "most certain"
@@ -276,7 +282,7 @@ def extract_usgs_doi(hl_words, mention, usgs_prefix='10.5066'):
                 doi_certainty = "less certain"
                 doi = test[:16]
             i += 1
-    if doi is not None and not doi.startswith('10.5066/'):
+    if doi is not None and not doi.startswith("10.5066/"):
         doi = None
 
     return doi, doi_certainty
@@ -289,9 +295,5 @@ def clean_unicode(full_txt):
     ----------
     Short term solution, reported to xDD
     """
-    full_txt = re.sub(
-        r"\u200b|\u2009|\u200a|\xa0",
-        "",
-        full_txt,
-    )
+    full_txt = re.sub(r"\u200b|\u2009|\u200a|\xa0", "", full_txt,)
     return full_txt

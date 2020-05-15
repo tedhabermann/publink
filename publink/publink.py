@@ -1,6 +1,6 @@
 """Main module."""
-
 import requests
+
 from publink import xdd_search
 
 
@@ -47,18 +47,13 @@ def doi_list_related(paired_dois):
         example: [{'pub_dois': ['10.23706/1111111A'],
         'data_doi': '10.5066/F79021VS'}]
     """
-    data_dois = [i['data_doi'] for i in paired_dois]
+    data_dois = [i["data_doi"] for i in paired_dois]
     unique_dois = list(set(data_dois))
 
     doi_list_related = []
     for data_doi in unique_dois:
-        rel = [
-            i["pub_doi"] for i in paired_dois if i[
-                "data_doi"] == data_doi
-                ]
-        new_format = {"data_doi": data_doi,
-                      "pub_dois": rel
-                      }
+        rel = [i["pub_doi"] for i in paired_dois if i["data_doi"] == data_doi]
+        new_format = {"data_doi": data_doi, "pub_dois": rel}
         doi_list_related.append(new_format)
     return doi_list_related
 
@@ -109,9 +104,7 @@ def xdd_usgs_referenced_dois(search_terms):
         data.get_doi_mentions()
         paired_dois.extend(data.related_dois)
     # Remove duplicate dictionaries from list
-    paired_dois = [
-        dict(t) for t in {tuple(d.items()) for d in paired_dois}
-        ]
+    paired_dois = [dict(t) for t in {tuple(d.items()) for d in paired_dois}]
 
     return paired_dois
 
@@ -122,8 +115,8 @@ def validate_dois(paired_dois):
     Validate that DOIs of publications and data DOIs resolve.
 
     """
-    pub_dois = [i['pub_doi'] for i in paired_dois]
-    data_dois = [i['data_doi'] for i in paired_dois]
+    pub_dois = [i["pub_doi"] for i in paired_dois]
+    data_dois = [i["data_doi"] for i in paired_dois]
 
     # reduce overall list of dois to validate
     unique_dois = list(set(pub_dois + data_dois))
@@ -134,7 +127,8 @@ def validate_dois(paired_dois):
             non_resolving_dois.append(doi)
             # removes dictionaries that contain doi not resolving
             paired_dois = [
-                i for i in paired_dois if not (
-                    i['data_doi'] == doi or i['pub_doi'] == doi)
-                ]
+                i
+                for i in paired_dois
+                if not (i["data_doi"] == doi or i["pub_doi"] == doi)
+            ]
     return paired_dois, non_resolving_dois

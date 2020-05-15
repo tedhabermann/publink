@@ -1,8 +1,5 @@
 """Tests for `xdd_search` package."""
 
-import pytest
-
-
 from publink import xdd_search
 
 s = xdd_search.SearchXdd()

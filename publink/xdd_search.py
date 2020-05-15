@@ -3,7 +3,6 @@
 # Import packages
 import requests
 import bs4
-# import BeautifulSoup
 import re
 from publink import publink
 

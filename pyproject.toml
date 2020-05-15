@@ -14,6 +14,7 @@ black = "^19.10b0"
 pre-commit = "^2.4.0"
 bandit = "^1.6.2"
 usgs-datatools = {git = "https://github.com/usgs-sdm/usgs_datatools.git"}
+sphinx = "^3.0.3"
 
 [tool.black]
 line-length = 79

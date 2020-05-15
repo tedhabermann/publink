@@ -3,6 +3,7 @@
 # Import packages
 import requests
 import bs4
+# import BeautifulSoup
 import re
 from publink import publink
 
@@ -10,13 +11,13 @@ from publink import publink
 class SearchXdd():
     """Class allowing for searching of xDD publication database."""
 
-    def __init__(self, search_term="10.5066", route="snippets"):
+    def __init__(self, search_terms="10.5066", route="snippets"):
         """Initialize search pubs object.
 
         Parameters
         ----------
-        search_term: str, default is USGS DOI prefix "10.5066"
-            term to search across xDD corpus
+        search_terms: str, default is USGS DOI prefix "10.5066"
+            comma separated search terms, no spaces e.g. "10.5066,10.4344"
         route: str, default "snippets"
             available routes described at https://geodeepdive.org/api
 
@@ -26,31 +27,74 @@ class SearchXdd():
 
         """
         self.xdd_api_base = "https://geodeepdive.org/api"
-        self.search_term = search_term
+        self.search_terms = search_terms.split(",")
         self.route = route
         self.response_data = []
-        self.search_url = None
+        self.search_urls = []
         self.next_url = ""
+        self.response_hits = 0
         self.response_status = "error"
         self.response_message = "No request made."
 
-    def build_query(self, params="full_results&clean"):
-        """Build xDD query to search user defined string."""
-        api_route = f"{self.xdd_api_base}/{self.route}"
-        q = f"?term={self.search_term}&{params}"
-        self.search_url = f"{api_route}{q}"
-        self.next_url = self.search_url
+    def all_search_terms(self):
+        """Create list of search terms each with space at each position.
+
+        In processing of articles occasionally words are split due to page
+        breaks. This gives us a list of possible search terms to query to
+        help us address this issue. Only use for snippet route.
+
+        Results
+        ----------
+        self.search_terms: list
+            list of strings having each search term and iterations of the
+            search terms with a space added at each index position not
+            including position 0 or x, where x is the length of the string.
+            Example:
+                initial search term = ["fun"]
+                search terms = ["fun", "f un", "fu n"]
+
+        """
+        for term in self.search_terms:
+            len_term = len(term)
+            new_terms = []
+            for i in range(1, len_term):
+                new_term = f"{term[:i]} {term[i:]}"
+                new_terms.append(new_term)
+        self.search_terms.extend(new_terms)
+
+    def build_query_urls(self, params="full_results&clean"):
+        """Build xDD query urls to search user defined terms.
+
+        Results
+        ----------
+        self.search_urls: list of strings
+            List of urls to query.
+
+        """
+        for search_term in self.search_terms:
+            api_route = f"{self.xdd_api_base}/{self.route}"
+            q = f"?term={search_term}&{params}"
+            url = f"{api_route}{q}"
+            self.search_urls.append(url)
+
+    def get_data(self):
+        """Get data from xDD for all search terms."""
+        for url in self.search_urls:
+            self.next_url = url
+            self.query_xdd()
 
     def query_xdd(self):
-        """Query xDD for results."""
+        """Query xDD for results for specific query."""
         while self.next_url != "":
             r = requests.get(self.next_url)
             if r.status_code == 200 and "success" in r.json():
                 json_response = r.json()
-                self.response_hits = json_response["success"]["hits"]
+                response_hits = json_response["success"]["hits"]
                 page_data = json_response["success"]["data"]
                 self.response_data.extend(page_data)
                 self.next_url = json_response["success"]["next_page"]
+                self.response_status = "success"
+                self.response_message = "Successful response."
             else:
                 self.next_url = ""
                 if r.status_code == 200 and "success" not in r.json():
@@ -61,154 +105,181 @@ class SearchXdd():
                     self.response_status = "error"
                     self.response_message = f"Request returned status code: \
                         {r.status_code}."
+                    break
                 else:
                     self.response_status = "error"
                     self.response_message = f"Unknown error."
-            self.response_status = "success"
-            self.response_message = "Successful response."
+                    break
 
-    def get_doi_mentions(self):
-        """Get mentions of DOIs from xDD snippets.
+        if self.response_status == "success":
+            self.response_hits += response_hits
 
-        Returns
+
+class GetDoiMentions():
+    """Class extracting DOI mentions from xDD snippets."""
+
+    def __init__(self, xdd_response, search_terms=["10.5066"]):
+        """Initialize search pubs object.
+
+        Parameters
         ----------
-        self.related_dois: list of dictionaries
-            list of dictionary pairs of data dois with pub dois
-            example: [{'pub_doi': '10.23706/1111111A',
-            'data_doi': '10.5066/F79021VS'}]
-        self.missing_pub_doi: list
-            list of data dois that xDD does not have a DOI for
-            the associated publication.  These DOI mentions may
-            still be important to a user but no relationship will
-            be documented in the DOI Tool.
+        search_terms: list of str, default is USGS DOI prefix ["10.5066"]
+            terms to search across xDD corpus
+        route: str, default "snippets"
+            available routes described at https://geodeepdive.org/api
+
+        Notes
+        ----------
+        Search terms not available for all routes in xDD
+
         """
-        self.missing_pub_doi = []
+        self.search_terms = [i.upper() for i in search_terms]
+        self.response_data = xdd_response
+
+    def get_specific_doi(self):
+        """Pair publication with exact match of full DOI.
+
+        Use when full DOIs used as search terms.
+
+        Notes
+        ----------
+        This will not return occasions where DOI is split by
+        a space unless that space is specified in search term.
+
+        """
         self.related_dois = []
         for ref in self.response_data:
             if "doi" in ref.keys() and ref["doi"] != "":
-                ref_doi = publink.doi_formatting(ref["doi"])
-                doi_mentions_for_ref = []
-                for i_link in ref["highlight"]:
-                    doi_mentions = extract_doi(self.search_term, i_link)
-                    if len(doi_mentions) > 0:
-                        doi_mentions_for_ref.extend(doi_mentions)
-                doi_mentions_for_ref = list(set(doi_mentions_for_ref))
-                new = [{"pub_doi": ref_doi, "data_doi": mention}
-                       for mention in doi_mentions_for_ref]
-                self.related_dois = self.related_dois + new
-            else:
-                self.missing_pub_doi.append(ref)
+                pub_doi = publink.doi_formatting(ref["doi"])
+                for hl in ref["highlight"]:
+                    pairs = [{"pub_doi": pub_doi,
+                              "data_doi": i
+                              } for i in self.search_terms if i in hl
+                             ]
+                    self.related_dois.extend(pairs)
 
-    # def validate_dois(self):
-    #     """Validate that DOIs resolve.
+        # Remove duplicate pairs
+        self.related_dois = [
+                dict(t) for t in {tuple(d.items()) for d in self.related_dois}
+                ]
 
-    #     Validate that DOIs of publications and data DOIs resolve.
+    def get_usgs_doi_mentions(self):
+        """Pair publication with match of full DOI.
 
-    #     """
-    #     pub_dois = [i['pub_doi'] for i in self.related_dois]
-    #     data_dois = [i['data_doi'] for i in self.related_dois]
+        Accounts for splits in DOI, doesn't require exact match.
+        Relies on formating that is specific to all USGS data DOIs.
 
-    #     unique_dois = list(set(pub_dois + data_dois))
+        """
+        self.related_dois = []
+        prefix = "10.5066"
+        for ref in self.response_data:
+            if "doi" in ref.keys() and ref["doi"] != "":
+                pub_doi = publink.doi_formatting(ref["doi"])
+                for hl in ref["highlight"]:
+                    hl = clean_highlight(hl, self.search_terms, prefix)
+                    # string to list for index of words
+                    hl_words = hl.split(' ')
+                    # get words from snippet with search prefix
+                    have_prefix = list(set([
+                        hl_word for hl_word in hl_words
+                        if prefix in hl_word
+                    ]))
 
-    #     self.non_resolving_dois = []
-    #     for doi in unique_dois:
-    #         if not publink.resolve_doi(doi):
-    #             self.non_resolving_dois.append(doi)
-    #             self.related_dois = [
-    #                 i for i in self.related_dois if not (
-    #                     i['data_doi'] == doi or i['pub_doi'] == doi)
-    #                 ]
+                    for mention in have_prefix:
+                        doi, doi_certainty = extract_usgs_doi(
+                            hl_words, mention
+                            )
+                        if doi is not None:
+                            pair = {"pub_doi": pub_doi, "data_doi": doi}
+                            self.related_dois.append(pair)
 
-    # def list_related_dois(self):
-    #     """Create dictionary with list of related dois.
-
-    #     Puts related DOIs into format used by doi_tool module.
-
-    #     """
-    #     data_dois = [i['data_doi'] for i in self.related_dois]
-    #     unique_dois = list(set(data_dois))
-
-    #     self.doi_all_related = []
-    #     for data_doi in unique_dois:
-    #         rel = [
-    #             i["pub_doi"] for i in self.related_dois if i[
-    #                 "data_doi"] == data_doi
-    #                 ]
-    #         new_format = {"data_doi": data_doi,
-    #                       "pub_dois": rel}
-    #         self.doi_all_related.append(new_format)
+        # Remove duplicate pairs
+        self.related_dois = [
+                dict(t) for t in {tuple(d.items()) for d in self.related_dois}
+                ]
 
 
-def extract_doi(find_str, full_txt):
-    """Extract DOI that was mentioned from xDD snippet.
+def clean_highlight(highlight_txt, search_terms, usgs_prefix='10.5066'):
+    """Clean xDD highlight text.
 
     Parameters
     ----------
-    find_str: str
-        intended to be doi prefix (example '10.5066'), but could be expanded
-    full_txt: str
-        text that contains the find_str
+    highlight_txt: str
+        string that includes a search term
+    search_terms: list of str
+        terms being searched
+    usgs_prefix: str, default '10.5066'
 
     Returns
     ----------
-    doi_mention: str
-        text representation of full doi (e.g. '10.5066/F79021VS')
-
-    Notes
-    ----------
-    This method currently only works for highly structured USGS DOIs
+    hl_clean: str
 
     """
-    # Verify DOI is not a number. These combonations
-    # shouldn't occur as DOI but should be further investigated
+    highlight_txt = highlight_txt.upper()
+    hl_nohtml = bs4.BeautifulSoup(
+        highlight_txt, features="html.parser").get_text()
+    hl_clean = clean_unicode(hl_nohtml)
 
-    full_txt = clean_unicode(full_txt)
-    doi_mentions = []
-    if avoid_numbers(find_str, full_txt):
-        pass
-    else:
-        # Extract one DOI at a time
-        while find_str in full_txt:
-            snippet_nohtml = bs4.BeautifulSoup(
-                full_txt, features="html.parser").get_text()
-            str_location = snippet_nohtml.find(find_str)
+    included_terms = [
+        i.upper() for i in search_terms
+        if i in hl_clean
+    ]
+    for term in included_terms:
+        hl_clean = hl_clean.replace(term, usgs_prefix)
 
-            # Construct doi from string
-            doi_mention = build_doi(snippet_nohtml, str_location)
-            if doi_mention is not None:
-                doi_mentions.append(doi_mention)
-
-            # Remove find_str instance, reset full_txt
-            full_txt = snippet_nohtml[
-                :str_location
-                ] + snippet_nohtml[str_location+6:]
-
-        # remove dups
-        doi_mentions = list(set(doi_mentions))
-
-    return doi_mentions
+    return hl_clean
 
 
-def avoid_numbers(search_term, full_txt):
-    """Check if string contains number substrings.
+def extract_usgs_doi(hl_words, mention, usgs_prefix='10.5066'):
+    """Extract DOI string from xDD highlight.
+
+    Parameters
+    ----------
+    hl_words: list of str
+        highlight in list of string format
+    mention: str
+        word in hl_word that contains usgs prefix
+    usgs_prefix: str, default = '10.5066'
 
     Returns
     ----------
-    True
-        full_txt contains any of the search terms to avoid processing
-    False
-        full_txt does not contain any search terms to avoid
-    """
-    avoid1 = f" {search_term} "
-    avoid2 = f" {search_term},"
-    avoid3 = f" {search_term}."
-    avoid4 = f" -{search_term}"
-    avoid = [avoid1, avoid2, avoid3, avoid4]
+    doi: str
+        16 character str starting with "10.5066"
+    doi_certainty: str
+        options include "most certain", "certain", "less certain"
 
-    if any(x in full_txt for x in avoid):
-        return True
+    """
+    doi = None
+    doi_certainty = None
+
+    test = f"{usgs_prefix}{mention.split(usgs_prefix)[1]}"
+    if len(test) == 16:
+        doi = test
+        doi_certainty = "most certain"
+    elif len(test) == 17 and test.endswith("."):
+        doi = test[:16]
+        doi_certainty = "most certain"
+    elif len(test) > 16:
+        doi = test[:16]
+        doi_certainty = "less certain"
     else:
-        return False
+        i = hl_words.index(mention)
+        while (len(hl_words) > i+1) and doi is None:
+            test = f"{test}{hl_words[i+1]}"
+            if len(test) == 16:
+                doi_certainty = "most certain"
+                doi = test
+            elif len(test) == 17 and test.endswith("."):
+                doi_certainty = "most certain"
+                doi = test[:16]
+            elif len(test) > 16:
+                doi_certainty = "less certain"
+                doi = test[:16]
+            i += 1
+    if doi is not None and not doi.startswith('10.5066/'):
+        doi = None
+
+    return doi, doi_certainty
 
 
 def clean_unicode(full_txt):
@@ -224,64 +295,3 @@ def clean_unicode(full_txt):
         full_txt,
     )
     return full_txt
-
-
-def build_doi(snippet, str_location):
-    """Deal with issues from xDD doc parsing.
-
-    Parameters
-    ----------
-    snippet: str
-        string of unstructured text
-    str_location: int
-        index value of where text of interest starts
-    """
-    # '10.5066'= 7 chars, + 8 for unique ID, + 3 for " " or "/"
-    doi_component = snippet[
-                    str_location: (str_location + 18)
-                ]
-
-    # remove symbols and spaces
-    doi_component_clean = re.sub(
-        r"\ |\?|\.|\!|\/|\;|\:|\|<|>|\)|\(|,|\[|\]|\〉",
-        "",
-        doi_component,
-    )
-
-    # rebuilds doi with proper structure
-    doi_rebuild = (
-        doi_component_clean[0:2]
-        + "."
-        + doi_component_clean[2:6]
-        + "/"
-        + doi_component_clean[6:14]
-                )
-
-    if len(doi_rebuild.strip()) == 16:
-        doi_mention = doi_rebuild
-    else:
-        doi_mention = None
-
-    return doi_mention
-
-
-# def doi_formatting(input_doi):
-#     """Reformat loosely structured DOIs.
-
-#     Currently only doing simplistic removal of 2 common http prefix
-#     and changing case to upper.
-#     End DOI should be in format NN.NNNN/*, not as url
-
-#     Parameters
-#     ----------
-#     input_doi: str
-
-#     """
-#     input_doi = input_doi.upper()
-#     if str(input_doi).startswith("HTTPS://DOI.ORG/"):
-#         formatted_doi = input_doi[16:]  # Remove URL prefix
-#     elif str(input_doi).startswith("HTTP://DX.DOI.ORG/"):
-#         formatted_doi = input_doi[18:]
-#     else:
-#         formatted_doi = str(input_doi)
-#     return formatted_doi

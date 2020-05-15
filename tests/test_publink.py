@@ -1,11 +1,6 @@
 #!/usr/bin/env python
-
 """Tests for `publink` package."""
-
 import pytest
-
-
-from publink import publink
 
 
 @pytest.fixture

@@ -115,7 +115,7 @@ class SearchXdd:
             self.response_hits += response_hits
 
 
-class GetDoiMentions:
+class GetMentions:
     """Class extracting DOI mentions from xDD snippets."""
 
     def __init__(self, xdd_response, search_terms=["10.5066"]):
@@ -136,14 +136,13 @@ class GetDoiMentions:
         self.search_terms = [i.upper() for i in search_terms]
         self.response_data = xdd_response
 
-    def get_specific_doi(self):
-        """Pair publication with exact match of full DOI.
-
-        Use when full DOIs used as search terms.
+    def get_specific_mention(self):
+        """Pair publication with exact match of search term.
 
         Notes
         ----------
-        This will not return occasions where DOI is split by
+        This can be used if user wants to pass full DOI as search term.
+        This will not return occasions where search term is split by
         a space unless that space is specified in search term.
 
         """
@@ -165,7 +164,7 @@ class GetDoiMentions:
         ]
 
     def get_usgs_doi_mentions(self):
-        """Pair publication with match of full DOI.
+        """Pair publication with match of USGS data DOI.
 
         Accounts for splits in DOI, doesn't require exact match.
         Relies on formating that is specific to all USGS data DOIs.

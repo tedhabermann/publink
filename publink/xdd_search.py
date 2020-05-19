@@ -119,49 +119,75 @@ class GetMentions:
     """Class extracting DOI mentions from xDD snippets."""
 
     def __init__(self, xdd_response, search_terms=["10.5066"]):
-        """Initialize search pubs object.
+        """Initialize object to get mentions of search term from xDD data.
 
         Parameters
         ----------
+        xdd_response: json
+            Response from xDD query.  SearchXdd response_data
         search_terms: list of str, default is USGS DOI prefix ["10.5066"]
             terms to search across xDD corpus
-        route: str, default "snippets"
-            available routes described at https://geodeepdive.org/api
-
-        Notes
-        ----------
-        Search terms not available for all routes in xDD
 
         """
         self.search_terms = [i.upper() for i in search_terms]
         self.response_data = xdd_response
 
-    def get_specific_mention(self):
-        """Pair publication with exact match of search term.
+    def get_exact_mention(self, is_doi=False):
+        """Get publications from xDD that contain mentions of search terms.
+
+        Returns
+        ----------
+        self.mentions: list of dict
+            includes publication xDD id, publication DOI and search term
+            e.g. [{'xdd_id':'5d41e5e40b45c76cafa2778c',
+                   'pub_doi':'10.1111/eva.12645',
+                   'search_term':'10.6084/m9.figshare.5234068',
+                   'highlight': 'str that ref term 10.6084/m9.figshare.5234068'
+                   }]
 
         Notes
         ----------
         This can be used if user wants to pass full DOI as search term.
-        This will not return occasions where search term is split by
-        a space unless that space is specified in search term.
 
         """
-        self.related_dois = []
+        self.mentions = []
         for ref in self.response_data:
+            xdd_id = ref["_gddid"]
             if "doi" in ref.keys() and ref["doi"] != "":
                 pub_doi = publink.doi_formatting(ref["doi"])
-                for hl in ref["highlight"]:
-                    pairs = [
-                        {"pub_doi": pub_doi, "data_doi": i}
+            else:
+                pub_doi = ""
+            for hl in ref["highlight"]:
+                hl = hl.upper()
+                if is_doi:
+                    related = [
+                        {"xdd_id": xdd_id,
+                         "pub_doi": pub_doi,
+                         "search_term": publink.doi_formatting(i),
+                         "highlight": hl
+                         }
                         for i in self.search_terms
-                        if i in hl
+                        if i.upper() in hl
                     ]
-                    self.related_dois.extend(pairs)
 
-        # Remove duplicate pairs
-        self.related_dois = [
-            dict(t) for t in {tuple(d.items()) for d in self.related_dois}
-        ]
+                else:
+                    related = [
+                        {"xdd_id": xdd_id,
+                         "pub_doi": pub_doi,
+                         "search_term": i.upper(),
+                         "highlight": hl
+                         }
+                        for i in self.search_terms
+                        if i.upper() in hl
+                    ]
+
+                if len(related) > 0:
+                    self.mentions.extend(related)
+
+        # # Remove duplicate relations
+        # self.related_pubs = [
+        #     dict(t) for t in {tuple(d.items()) for d in self.related_pubs}
+        # ]
 
     def get_usgs_doi_mentions(self):
         """Pair publication with match of USGS data DOI.
@@ -169,39 +195,56 @@ class GetMentions:
         Accounts for splits in DOI, doesn't require exact match.
         Relies on formating that is specific to all USGS data DOIs.
 
+        Returns
+        ----------
+        self.mentions: list of dict
+            includes publication xDD id, publication DOI and search term
+            e.g. [{'xdd_id':'5d41e5e40b45c76cafa2778c',
+                   'pub_doi': '10.3133/OFR20191040',
+                   'data_doi':'10.5066/P9LYUFRH',
+                   'highlight': 'str that ref usgs doi 10.5066/P9LYUFRH''
+                   }]
+
         """
-        self.related_dois = []
+        self.mentions = []
         prefix = "10.5066"
         for ref in self.response_data:
+            xdd_id = ref["_gddid"]
             if "doi" in ref.keys() and ref["doi"] != "":
                 pub_doi = publink.doi_formatting(ref["doi"])
-                for hl in ref["highlight"]:
-                    hl = clean_highlight(hl, self.search_terms, prefix)
-                    # string to list for index of words
-                    hl_words = hl.split(" ")
-                    # get words from snippet with search prefix
-                    have_prefix = list(
-                        set(
-                            [
-                                hl_word
-                                for hl_word in hl_words
-                                if prefix in hl_word
-                            ]
-                        )
+            else:
+                pub_doi = ""
+
+            for hl in ref["highlight"]:
+                hl = clean_highlight(hl, self.search_terms, prefix)
+                # string to list for index of words
+                hl_words = hl.split(" ")
+                # get words from snippet with search prefix
+                have_prefix = list(
+                    set(
+                        [
+                            hl_word
+                            for hl_word in hl_words
+                            if prefix in hl_word
+                        ]
                     )
+                )
 
-                    for mention in have_prefix:
-                        doi, doi_certainty = extract_usgs_doi(
-                            hl_words, mention
-                        )
-                        if doi is not None:
-                            pair = {"pub_doi": pub_doi, "data_doi": doi}
-                            self.related_dois.append(pair)
+                for mention in have_prefix:
+                    doi, doi_certainty = extract_usgs_doi(
+                        hl_words, mention
+                    )
+                    if doi is not None:
+                        related = {"xdd_id": xdd_id,
+                                   "pub_doi": pub_doi,
+                                   "data_doi": doi,
+                                   "highlight": hl}
+                        self.mentions.append(related)
 
-        # Remove duplicate pairs
-        self.related_dois = [
-            dict(t) for t in {tuple(d.items()) for d in self.related_dois}
-        ]
+        # # Remove duplicate relations
+        # self.related_pubs = [
+        #     dict(t) for t in {tuple(d.items()) for d in self.related_pubs}
+        # ]
 
 
 def clean_highlight(highlight_txt, search_terms, usgs_prefix="10.5066"):

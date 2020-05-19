@@ -116,7 +116,7 @@ class SearchXdd:
 
 
 class GetMentions:
-    """Class extracting DOI mentions from xDD snippets."""
+    """Class extracting term mentions from xDD snippets."""
 
     def __init__(self, xdd_response, search_terms=["10.5066"]):
         """Initialize object to get mentions of search term from xDD data.
@@ -184,11 +184,6 @@ class GetMentions:
                 if len(related) > 0:
                     self.mentions.extend(related)
 
-        # # Remove duplicate relations
-        # self.related_pubs = [
-        #     dict(t) for t in {tuple(d.items()) for d in self.related_pubs}
-        # ]
-
     def get_usgs_doi_mentions(self):
         """Pair publication with match of USGS data DOI.
 
@@ -201,7 +196,7 @@ class GetMentions:
             includes publication xDD id, publication DOI and search term
             e.g. [{'xdd_id':'5d41e5e40b45c76cafa2778c',
                    'pub_doi': '10.3133/OFR20191040',
-                   'data_doi':'10.5066/P9LYUFRH',
+                   'search_term': '10.5066/P9LYUFRH',
                    'highlight': 'str that ref usgs doi 10.5066/P9LYUFRH''
                    }]
 
@@ -237,14 +232,9 @@ class GetMentions:
                     if doi is not None:
                         related = {"xdd_id": xdd_id,
                                    "pub_doi": pub_doi,
-                                   "data_doi": doi,
+                                   "search_term": doi,
                                    "highlight": hl}
                         self.mentions.append(related)
-
-        # # Remove duplicate relations
-        # self.related_pubs = [
-        #     dict(t) for t in {tuple(d.items()) for d in self.related_pubs}
-        # ]
 
 
 def clean_highlight(highlight_txt, search_terms, usgs_prefix="10.5066"):

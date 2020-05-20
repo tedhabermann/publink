@@ -41,7 +41,7 @@ Understanding how data are used across the scientific community provides many be
 
 This package provides methods to help extract and build relationships between publications and the datasets they reference.   Methods are developed to support pipelines to track how these relationships change through time. The package currently leverages two very different sources including the eXtract Dark Data Database (xDD, formally known as GeoDeepDive, https://geodeepdive.org/) and Crossref Event Data (https://www.eventdata.crossref.org/guide/).  The xDD digital library of over 12 million publications can be leveraged to search all mentions of search terms, including digital object identifiers.  This unique method allows us to capture relationships that dated many of the current reporting efforts, and or have not been reported to those managing this type of information.   Crossref Event Data tracks events that house relationships between registered content and something out in the web.  Currently we leverage their API to extract known references between publication DOIs and datasets of interest.  
 
-We also include stubbed out methods to show how we plan to use information gathered with publink methods by logging relationships within DataCite Digital Object Identifier (DOI) records.
+We also include methods demonstrating how we plan to store relationships discovered with publink within the DataCite Digital Object Identifier (DOI) metadata.  Storing these relationships in the DOI metadata will allow us to pass the relationships back to Event Data and use the information in other tools such as providing citation counts on our data repository landing pages.
  
 Requirements
 ------------

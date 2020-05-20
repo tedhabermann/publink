@@ -2,6 +2,7 @@
 import requests
 
 from publink import xdd_search
+from publink import eventdata
 
 
 def search_xdd(search_terms, account_for_spaces=True):
@@ -56,6 +57,61 @@ def xdd_mentions(xdd_response, search_terms, search_type='exact_match', is_doi=F
         mention.get_exact_mention(is_doi)
     elif search_type == 'usgs':
         mention.get_usgs_doi_mentions()
+
+    return mention
+
+
+def search_eventdata(search_term, search_type, mailto):
+    """Search eventdata by term.
+
+    See eventdata docs @ https://www.eventdata.crossref.org/guide/
+
+    Parameters
+    ----------
+    search_terms: str
+        term to search, either doi prefix formatted like "10.5066"
+        or doi formatted like "10.5066/P9IGEC9G"
+    search_type: str, default "doi"
+        - ``'doi'``: filter type that queries specific DOI.
+        - ``'doi_prefix'``: filter type that queries DOI prefix
+    mailto: str
+        email contact, requested by crossref to help understand
+        who is using their api
+
+    Returns
+    ----------
+    search: obj
+        SearchEventdata object containing search results and messages
+
+    Notes
+    ----------
+    In dev this api fails more times than succeeds and may require
+    several attempts before getting successful return
+
+    """
+    search = eventdata.SearchEventdata(search_term, search_type, mailto)
+    search.build_query_url()
+    search.get_data()
+
+    return search
+
+
+def eventdata_mentions(eventdata_response):
+    """Get mentions of search term from xDD.
+
+    Parameters
+    ----------
+    eventdata_response: json
+        Response from eventdata query.  SearchEventdata response_data
+
+    Returns
+    ----------
+    mention: obj
+        eventdata.GetRelated object containing mentions and messages
+
+    """
+    mention = eventdata.GetRelated(eventdata_response)
+    mention.get_related_dois()
 
     return mention
 

@@ -1,9 +1,11 @@
 """Tests for `xdd_search` package."""
 
 from publink import xdd_search
+import validators
 
 s = xdd_search.SearchXdd()
 s.all_search_terms()
+s.build_query_urls()
 
 test_snippets = [
     {
@@ -81,3 +83,9 @@ def test_extract_usgs_doi():
             extract_doi = xdd_search.extract_usgs_doi(hl_words, mention)
             all_dois.append(extract_doi[0])
         assert test["correct_doi"].sort() == all_dois.sort()
+
+
+def test_build_query_urls():
+    """Validate query urls."""
+    for url in s.search_urls:
+        assert validators.url(url)

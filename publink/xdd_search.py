@@ -62,7 +62,7 @@ class SearchXdd:
                 new_terms.append(new_term)
         self.search_terms.extend(new_terms)
 
-    def build_query_urls(self, params="full_results&clean"):
+    def build_query_urls(self, params="full_results&clean&inclusive"):
         """Build xDD query urls to search user defined terms.
 
         Results
@@ -73,6 +73,7 @@ class SearchXdd:
         """
         for search_term in self.search_terms:
             api_route = f"{self.xdd_api_base}/{self.route}"
+            search_term = search_term.replace(" ", "%20")
             q = f"?term={search_term}&{params}"
             url = f"{api_route}{q}"
             self.search_urls.append(url)

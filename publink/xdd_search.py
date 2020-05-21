@@ -194,7 +194,8 @@ class GetMentions:
         Returns
         ----------
         self.mentions: list of dict
-            includes publication xDD id, publication DOI and search term
+            includes publication xDD id, publication DOI, 
+            search term and highlight
             e.g. [{'xdd_id':'5d41e5e40b45c76cafa2778c',
                    'pub_doi': '10.3133/OFR20191040',
                    'search_term': '10.5066/P9LYUFRH',

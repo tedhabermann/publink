@@ -61,9 +61,17 @@ Example that queries xDD for mentions of 2 DOIs and returns relationships betwee
 	from publink import publink
 	
 	# Search xDD for DOI mentions of two DOIs
-	search = publink.search_xdd("10.5066/P9IGEC9G,10.5066/F7K935KT", account_for_spaces=True)
-	mention = publink.xdd_mentions(search.response_data, search.search_terms, search_type='exact_match', is_doi=True)
-
+	
+	search = publink.search_xdd(
+		"10.5066/P9IGEC9G,10.5066/F7K935KT",
+		account_for_spaces=True
+	)
+	
+	mention = publink.xdd_mentions(
+		search.response_data, search.search_terms, 
+		search_type='exact_match', is_doi=True
+	)
+	
 	print (mention.mentions)
 	
 

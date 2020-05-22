@@ -54,28 +54,84 @@ Install the package
 * pip install PLACEHOLDER
 
 
-Example that queries xDD for mentions of 2 DOIs and returns relationships between publications and the searched DOIs.
+Example 1 queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
 
 .. code-block:: python
 	
 	# Import packages
 	from publink import publink
 	
+	# Define search terms
+	# Note comma separated text string with no spaces
+	terms = "10.5066/P9IGEC9G,10.5066/F7K935KT"
+	
 	# Search xDD for DOI mentions of two DOIs
 	search = publink.search_xdd(
-		"10.5066/P9IGEC9G,10.5066/F7K935KT", 
-		account_for_spaces=True
+		terms, account_for_spaces=True
 		)
 	 
 	mention = publink.xdd_mentions(
 	 	search.response_data, search.search_terms, 
 	 	search_type='exact_match', is_doi=True
 	 	)
+	# print first two mentions
+	print (mention.mentions[0:2])
 	
-	print (mention.mentions)
+Example 1 results of print statement to show output data structure.  Note values may differ.
+
+.. code-block:: JSON
+
+  [{'xdd_id': '5a0493b1cf58f1b96402aa7c',
+    'pub_doi': '10.1002/2017WR020457',
+    'search_term': '10.5066/F7K935KT',
+    'highlight': 'DATABASE, IN U.S. GEOLOGICAL SURVEY DATA RELEASE, DOI:10.5066/F7K935KT. BELLMORE,'
+	},
+   {'xdd_id': '585b4a6ccf58f1a722da91ea',
+    'pub_doi': '10.1002/ESP.4023',
+    'search_term': '10.5066/F7K935KT',
+    'highlight': 'SCIENCE DATABASE. DOI:10.5066/F7K935KT. BRANDT SA. 2000. CLASSIFICATION OF GEOMORPHOLOGICAL'
+	}]
+
+Example 2 queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that unlike DOI results further investigation of these results should be taken out to validate mentions.
+
+.. code-block:: python
 	
+	# Import packages
+	from publink import publink
+	
+	# Define search terms
+	# Note comma separated text string with no spaces
+	terms = "PAD-US,Protected Areas Database of the United States"
+	
+	# Search xDD for DOI mentions of two DOIs
+	search = publink.search_xdd(
+		terms, account_for_spaces=True
+		)
+	 
+	mention = publink.xdd_mentions(
+	 	search.response_data, search.search_terms, 
+	 	search_type='exact_match', is_doi=False
+	 	)
+		
+	# print first two mentions
+	print (mention.mentions[0:2])
+	
+Example 2 results of print statement to show output data structure.  Note values may differ.
 
+.. code-block:: JSON
 
+  [{'xdd_id': '5c1c34751faed655488963fc',
+    'pub_doi': '10.1016/J.FORPOL.2018.03.009',
+    'search_term': 'PAD-US',
+    'highlight': 'THE PROTECTED AREAS DATABASE OF THE UNITED STATES (PAD-US) (USGS, 2013). MEAN SLOPE'
+	},
+	{'xdd_id': '5c1cd6271faed655488975f8',
+     'pub_doi': '10.1016/J.BIOCON.2018.05.019',
+     'search_term': 'PAD-US',
+     'highlight': 'DATABASE OF THE UNITED STATES (PAD-US, VERSION 1.4) (DELLASALA ET AL., 2001; USGS,'
+	 }]
+	
+	
 Documentation
 -------------
 Documentation can be found https://publink.readthedocs.io

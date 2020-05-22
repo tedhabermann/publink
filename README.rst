@@ -54,7 +54,7 @@ Install the package
 * pip install PLACEHOLDER
 
 
-Example 1 queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
+**Example 1** queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
 
 .. code-block:: python
 	
@@ -77,7 +77,7 @@ Example 1 queries xDD for mentions of two DOIs and returns relationships between
 	# print first two mentions
 	print (mention.mentions[0:2])
 	
-Example 1 results of print statement to show output data structure.  Note values may differ.
+**Example 1 results** of print statement to show output data structure.  Note values may differ as xDD is updated.
 
 .. code-block:: JSON
 
@@ -92,7 +92,7 @@ Example 1 results of print statement to show output data structure.  Note values
     'highlight': 'SCIENCE DATABASE. DOI:10.5066/F7K935KT. BRANDT SA. 2000. CLASSIFICATION OF GEOMORPHOLOGICAL'
 	}]
 
-Example 2 queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that unlike DOI results further investigation of these results should be taken out to validate mentions.
+**Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that unlike DOI results further investigation of these results should be taken out to validate mentions.
 
 .. code-block:: python
 	
@@ -103,7 +103,7 @@ Example 2 queries xDD for mentions of two dataset title names and returns relati
 	# Note comma separated text string with no spaces
 	terms = "PAD-US,Protected Areas Database of the United States"
 	
-	# Search xDD for DOI mentions of two DOIs
+	# Search xDD for DOI mentions of two titles
 	search = publink.search_xdd(
 		terms, account_for_spaces=True
 		)
@@ -116,7 +116,7 @@ Example 2 queries xDD for mentions of two dataset title names and returns relati
 	# print first two mentions
 	print (mention.mentions[0:2])
 	
-Example 2 results of print statement to show output data structure.  Note values may differ.
+**Example 2 results** of print statement to show output data structure.  Note values may differ as xDD is updated.
 
 .. code-block:: JSON
 
@@ -130,8 +130,79 @@ Example 2 results of print statement to show output data structure.  Note values
      'search_term': 'PAD-US',
      'highlight': 'DATABASE OF THE UNITED STATES (PAD-US, VERSION 1.4) (DELLASALA ET AL., 2001; USGS,'
 	 }]
+
+**Example 3** queries xDD for mentions of all USGS DOIs with the prefix "10.5066" and returns relationships between publications and the USGS data DOIs. This technique requires prior knowledge of DOI format and currently uses methods specific to USGS (e.g. all DOIs are 16 characters long). 
+
+.. code-block:: python
 	
+	# Import packages
+	from publink import publink
 	
+	# Search xDD for DOI mentions of all USGS DOIs with prefix "10.5066"
+	search = publink.search_xdd(
+		"10.5066", account_for_spaces=True
+		)
+	 
+	mention = publink.xdd_mentions(
+	 	search.response_data, search.search_terms, 
+	 	search_type='usgs', is_doi=True
+	 	)
+		
+	# print first two mentions
+	print (mention.mentions[0:2])
+	
+**Example 3 results** of print statement to show output data structure.  Note values may differ as xDD is updated.
+
+.. code-block:: JSON
+
+  [{'xdd_id': '5e62d6d1998e17af82642c1c',
+    'pub_doi': '10.3133/SIM3428',
+    'search_term': '10.5066/P91HL91C',
+    'highlight': 'ARABIA: U.S. GEOLOGICAL SURVEY DATA RELEASE, DOI:10.5066/P91HL91C. DOWNS, D.T., STELTEN, M.E., CHAMPION,'
+	},
+   {'xdd_id': '5e62de89998e17af82642dec',
+    'pub_doi': '10.3133/SIR20195140',
+    'search_term': '10.5066/F7P55KJN',
+    'highlight': 'DATABASE, ACCESSED JUNE 10, 2018, AT HTTPS://DOI. ORG/10.5066/F7P55KJN. WHEELER, J.D., AND EDDY-MILLER,'
+	}]
+
+**Example 4** queries eventdata for events that mention a DOI being referenced by another DOI (publication DOI).  We note that calls to the eventdata API were unstable at the time of development. If no data are returned verify the success of the query.  Prefix searches can be conducted with search_type="doi_prefix".  
+
+.. code-block:: python
+	
+	# DOI to search, note the format
+	search_term = "10.5066/F7K935KT"
+
+	# Search eventdata for DOI events
+	search = publink.search_eventdata(
+		search_term, search_type="doi",
+		mailto='dwieferich@usgs.gov'
+		)
+
+	# Print search message
+	print (search.response_message + '\n')
+
+	# Get Events that mention DOI being referenced by another DOI (pub_doi)
+	mention = publink.eventdata_mentions(
+		search.response_data
+		)
+
+	# Print first two mentions
+	print (mention.related_dois)
+	
+**Example 4 results** of print statements to show output data structure.  Note values may differ as eventdata is updated.
+
+.. code-block:: JSON
+
+  Successful response.
+  
+  [{'event_id': 'cfc4f434-60c3-407f-bd06-2c7f122867f3',
+    'pub_doi': '10.1007/s10661-017-6060-x',
+    'search_term': '10.5066/F7K935KT',
+    'source': 'crossref',
+	}]
+
+
 Documentation
 -------------
 Documentation can be found https://publink.readthedocs.io

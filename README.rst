@@ -51,7 +51,7 @@ Getting Started
 ---------------
 Install the package
 
-* pip install PLACEHOLDER
+* pip install git+ssh://git@code.usgs.gov/sas/sdm/publink
 
 
 **Example 1** queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
@@ -169,6 +169,9 @@ Install the package
 **Example 4** queries eventdata for events that mention a DOI being referenced by another DOI (publication DOI).  We note that calls to the eventdata API were unstable at the time of development. If no data are returned verify the success of the query.  Prefix searches can be conducted with search_type="doi_prefix".  
 
 .. code-block:: python
+
+	# Import packages
+	from publink import publink
 	
 	# DOI to search, note the format
 	search_term = "10.5066/F7K935KT"
@@ -199,7 +202,7 @@ Install the package
   [{'event_id': 'cfc4f434-60c3-407f-bd06-2c7f122867f3',
     'pub_doi': '10.1007/s10661-017-6060-x',
     'search_term': '10.5066/F7K935KT',
-    'source': 'crossref',
+    'source': 'crossref
 	}]
 
 

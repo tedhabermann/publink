@@ -54,7 +54,7 @@ Install the package
 * pip install git+ssh://git@code.usgs.gov/sas/sdm/publink
 
 
-**Example 1** queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
+**Example 1a** queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
 
 .. code-block:: python
 	
@@ -77,7 +77,7 @@ Install the package
 	# print first two mentions
 	print (mention.mentions[0:2])
 	
-**Example 1 results** of print statement to show output data structure.  Note values may differ as xDD is updated.
+**Example 1a results** of print statement to show output data structure.  Note values may differ as xDD is updated.
 
 .. code-block:: JSON
 
@@ -91,8 +91,42 @@ Install the package
     'search_term': '10.5066/F7K935KT',
     'highlight': 'SCIENCE DATABASE. DOI:10.5066/F7K935KT. BRANDT SA. 2000. CLASSIFICATION OF GEOMORPHOLOGICAL'
 	}]
+	
+**Example 1b** restructures mentions from example 1a to DataCite related-identifier schema.
 
-**Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that unlike DOI results further investigation of these results should be taken out to validate mentions.
+.. code-block:: python
+	
+	# Import packages
+	from publink import publink
+	
+	related_identifiers = publink.to_related_identifiers(mention.mentions)
+	
+	print (related_identifiers)
+	
+**Example 1b results** of print statement to show output data structure.  Note values may differ as xDD is updated.
+
+.. code-block:: JSON
+
+  [{'doi': '10.5066/F7K935KT',
+  'identifier': 'https://doi.org/10.5066/F7K935KT',
+  'related-identifiers': [{'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.1002/WAT2.1164'},
+   {'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.3133/OFR20161132'},
+   {'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.1080/24694452.2018.1507814'},
+   {'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.1002/2017WR020457'},
+   {'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.1111/1752-1688.12450'},
+   {'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.3133/OFR20161165'},
+   {'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.1016/J.GEOMORPH.2015.07.027'},
+   {'relation-type-id': 'IsReferencedBy',
+    'related-identifier': 'https://doi.org/10.1002/ESP.4023'}]}]
+
+**Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that unlike DOI results further investigation of these results should be considered to validate mentions.
 
 .. code-block:: python
 	

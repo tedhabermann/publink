@@ -13,7 +13,9 @@ def search_xdd(search_terms, account_for_spaces=True):
     search_terms: str
         comma separated search terms, no spaces e.g. "10.5066,10.4344"
     account for spaces: Bool
-        True searchces exact match with spaces (see xdd_search.SearchXdd.all_search_terms)
+        True searches iterations of search_term with spaces inserted at each
+            position to account for line or page breaks in the middle of a word
+            (see xdd_search.SearchXdd.all_search_terms)
         False only searches exact match of provided search terms,
 
     Returns
@@ -117,9 +119,9 @@ def eventdata_mentions(eventdata_response):
 
 
 def to_related_identifiers(mentions):
-    """Reformat mentions to DataCite related-identifier schema.
+    """Reformat mentions to match DataCite's schema for storing identifier relationships.
 
-    Reformats mentions relating two DOIs to DataCite schema that is
+    Reformats mentions relating two DOIs to DataCite's schema that is
     used to capture related-identifiers.  This format will likely
     be needed if a user wants to write relationships back to DOIs
     through DataCite or an associated DataCite broker.
@@ -197,9 +199,8 @@ def resolve_doi(doi):
     """Test if DOI resolves.
 
     Validate that a DOI resolves correctly by
-    giving a 302 status code implying it found
-    a redirect.  If for some reason a DOI does not
-    resolve it will give a 404 status.
+    giving a 200 status code after following all redirects.
+    If a DOI does not resolve it will give a 404 status.
 
     Parameters
     ----------
@@ -215,12 +216,14 @@ def resolve_doi(doi):
     A better understanding of requests.head and 302
     status code should be validated. E.g. are all
     302 codes going to fully resolve if redirect is
-    followed.
+    followed. DANIEL SEE CHANGES BELOW FOR MY SUGGESTED
+    CHANGES.
 
     """
     doi_url = f"https://doi.org/{doi}"
-    r = requests.head(doi_url)
-    if r.status_code == 302:
+    r = requests.head(doi_url, allow_redirects=True)
+    # allow_redirects will show the status code after redirect is followed
+    if r.status_code == 200:
         return True
     else:
         return False
@@ -296,9 +299,9 @@ def get_unique_pairs(mentions):
 def doi_formatting(input_doi):
     """Reformat loosely structured DOIs.
 
-    Currently only doing simplistic removal of 2 common http prefix
+    Currently only doing simplistic removal of 8 common http prefix
     and changing case to upper.
-    End DOI should be in format NN.NNNN/*, not as url
+    End DOI should be in format 10.NNNN/*, not as url
 
     Parameters
     ----------
@@ -307,10 +310,25 @@ def doi_formatting(input_doi):
     """
     input_doi = input_doi.upper()
     input_doi = input_doi.replace(" ", "")
-    if str(input_doi).startswith("HTTPS://DOI.ORG/"):
+    # All DOI prefixes begin with '10'
+    if str(input_doi).startswith("10"):
+        formatted_doi = str(input_doi)
+    elif str(input_doi).startswith("HTTPS://DOI.ORG/"):
         formatted_doi = input_doi[16:]  # Remove URL prefix
+    elif str(input_doi).startwith("HTTPS://DOI.ORG/DOI:"):
+        formatted_doi = input_doi[20:]
+    elif str(input_doi).startswith("HTTPS://DX.DOI.ORG/"):
+        formatted_doi = input_doi[19:]
+    elif str(input_doi).startswith("HTTPS://DX.DOI.ORG/DOI:"):
+        formatted_doi = input_doi[23:]
+    elif str(input_doi).startswith("HTTP://DOI.ORG/"):
+        formatted_doi = input_doi[15:]
+    elif str(input_doi).startswith("HTTP://DOI.ORG/DOI:"):
+        formatted_doi = input_doi[19:]
     elif str(input_doi).startswith("HTTP://DX.DOI.ORG/"):
         formatted_doi = input_doi[18:]
+    elif str(input_doi).startswith("HTTP://DX.DOI.ORG/DOI:"):
+        formatted_doi = input_doi[22:]
     else:
-        formatted_doi = str(input_doi)
+        formatted_doi = str(input_doi)  # DANIEL SHOULD WE RETURN AN ERROR HERE?
     return formatted_doi

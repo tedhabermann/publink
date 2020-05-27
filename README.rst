@@ -37,11 +37,11 @@ Contacts
 
 Purpose
 -------
-Understanding how data are used across the scientific community provides many benefits to data owners including building a better understand of 1) a dataset's scientific impact 2) use cases to direct future versions, 3) related efforts.  There are few efforts that help authors track how their data are being used in literature through time.  This is in part due the to a lack of consistency in how data are referenced in citations and a currently evolving field of data science allowing for the management and distribution of this information.  
+Understanding how data are used across the scientific community provides many benefits to data authors including building a better awareness of 1) a dataset's scientific impact 2) use cases to direct future versions, 3) related efforts.  There are few efforts that help authors track how their data are being used in literature through time.  This is in part due the to a lack of consistency in how data are referenced in scientific publications and whether or not publishers index data citations. The Make Data Count initiative (https://makedatacount.org) is encouraging publishers to implement policies that require that authors cite data in their references list and to index these data citations with Crossref. This initiative will enhance the ability of data authors to track downstream use of their data; however, many publishers have not yet adopted these practices and data citation indexing will likely not happen retroactively.
 
-This package provides methods to help extract and build relationships between publications and the datasets they reference.   Methods are developed to support pipelines to track how these relationships change through time. The package currently leverages two very different sources including the eXtract Dark Data Database (xDD, formally known as GeoDeepDive, https://geodeepdive.org/) and Crossref Event Data (https://www.eventdata.crossref.org/guide/).  The xDD digital library of over 12 million publications can be leveraged to search all mentions of search terms, including digital object identifiers.  This unique method allows us to capture relationships that dated many of the current reporting efforts, and or have not been reported to those managing this type of information.   Crossref Event Data tracks events that house relationships between registered content and something out in the web.  Currently we leverage their API to extract known references between publication DOIs and datasets of interest.  
+This package provides methods to help extract and build relationships between publications and the datasets they reference.   Methods have been developed that support pipelines for tracking existing and new relationships through time. The package currently leverages two different sources including the eXtract Dark Data Database (xDD, formally known as GeoDeepDive, https://geodeepdive.org/) and Crossref and DataCite Event Data (https://www.eventdata.crossref.org/guide/).  The xDD digital library of over 12 million publications can be leveraged to search all mentions of search terms, including digital object identifiers.  This unique method allows us to capture relationships that pre-dated adoption of data citation principles (Data Citation Synthesis Group, 2014) and data citation indexing efforts.  Crossref and DataCite Event Data documents relationships between Crossref and DataCite digital object identifiers (DOIs) and other content on the web.  Currently, we leverage their API to extract known references between publication DOIs and datasets of interest.  
 
-We also include methods demonstrating how we plan to store relationships discovered with publink within the DataCite Digital Object Identifier (DOI) metadata.  Storing these relationships in the DOI metadata will allow us to pass the relationships back to Event Data and use the information in other tools such as providing citation counts on our data repository landing pages.
+We also include methods demonstrating how you can store relationships discovered with publink within the DataCite DOI metadata.  Storing these relationships in the DOI metadata allows relationships discovered through xDD to be included in Event Data. It also allows the use of this information in other tools such as downstream data repositories.
  
 Requirements
 ------------
@@ -65,11 +65,12 @@ Install the package
 	# Note comma separated text string with no spaces
 	terms = "10.5066/P9IGEC9G,10.5066/F7K935KT"
 	
-	# Search xDD for DOI mentions of two DOIs
+	# Search publications in xDD for mentions of the two DOIs
 	search = publink.search_xdd(
 		terms, account_for_spaces=True
 		)
-	 
+
+	# Simplify and restructure output data 
 	mention = publink.xdd_mentions(
 	 	search.response_data, search.search_terms, 
 	 	search_type='exact_match', is_doi=True
@@ -92,7 +93,7 @@ Install the package
     'highlight': 'SCIENCE DATABASE. DOI:10.5066/F7K935KT. BRANDT SA. 2000. CLASSIFICATION OF GEOMORPHOLOGICAL'
 	}]
 	
-**Example 1b** restructures mentions from example 1a to DataCite related-identifier schema.
+**Example 1b** restructures mentions from example 1a to match DataCite's schema for storing identifier relationships.
 
 .. code-block:: python
 	
@@ -127,7 +128,7 @@ Install the package
     'related-identifier': 'https://doi.org/10.1002/ESP.4023'}]
 	}]
 
-**Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that unlike DOI results further investigation of these results should be considered to validate mentions.
+**Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that, unlike DOI results, further investigation of these results should be considered to validate mentions. This method is ideal for datasets without assigned DOIs or for datasets with DOIs that were assigned after intial dataset publication.
 
 .. code-block:: python
 	
@@ -138,11 +139,12 @@ Install the package
 	# Note comma separated text string with no spaces
 	terms = "PAD-US,Protected Areas Database of the United States"
 	
-	# Search xDD for DOI mentions of two titles
+	# Search publications in xDD for mentions of the two titles
 	search = publink.search_xdd(
 		terms, account_for_spaces=True
 		)
-	 
+	
+	# Simplify and restructure output data  
 	mention = publink.xdd_mentions(
 	 	search.response_data, search.search_terms, 
 	 	search_type='exact_match', is_doi=False
@@ -151,7 +153,7 @@ Install the package
 	# print first two mentions
 	print (mention.mentions[0:2])
 	
-**Example 2 results** of print statement to show output data structure.  Note values may differ as xDD is updated.
+**Example 2 results** of print statement to show output data structure.  Note values may differ as xDD is updated. Additionally, note that PAD-US version 1.4 was assigned a DOI; however, the publication found in xDD did not reference the DOI.
 
 .. code-block:: JSON
 
@@ -173,7 +175,7 @@ Install the package
 	# Import packages
 	from publink import publink
 	
-	# Search xDD for DOI mentions of all USGS DOIs with prefix "10.5066"
+	# Search publications in xDD for mentions of all USGS DOIs with prefix "10.5066"
 	search = publink.search_xdd(
 		"10.5066", account_for_spaces=True
 		)
@@ -201,7 +203,7 @@ Install the package
     'highlight': 'DATABASE, ACCESSED JUNE 10, 2018, AT HTTPS://DOI. ORG/10.5066/F7P55KJN. WHEELER, J.D., AND EDDY-MILLER,'
 	}]
 
-**Example 4** queries eventdata for events that mention a DOI being referenced by another DOI (publication DOI).  We note that calls to the eventdata API were unstable at the time of development. If no data are returned verify the success of the query.  Prefix searches can be conducted with search_type="doi_prefix".  
+**Example 4** queries eventdata for events that mention a DOI being referenced by another DOI (publication DOI).  We note that calls to the eventdata API were unstable at the time of development. If no data are returned, verify the success of the query.  Prefix searches can be conducted with search_type="doi_prefix".  
 
 .. code-block:: python
 
@@ -226,7 +228,7 @@ Install the package
 		)
 
 	# Print first two mentions
-	print (mention.related_dois)
+	print (mention.related_dois[0:2])
 	
 **Example 4 results** of print statements to show output data structure.  Note values may differ as eventdata is updated.
 
@@ -239,6 +241,11 @@ Install the package
     'search_term': '10.5066/F7K935KT',
     'source': 'crossref
 	}]
+
+
+References
+---------------------
+Data Citation Synthesis Group, 2014, Joint Declaration of Data Citation Principles, Martone M. (ed.): FORCE11, https://doi.org/10.25490/a97f-egyk.
 
 
 Documentation

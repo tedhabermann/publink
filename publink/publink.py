@@ -123,6 +123,9 @@ def to_related_identifiers(mentions):
     used to capture related-identifiers.  This format will likely
     be needed if a user wants to write relationships back to DOIs
     through DataCite or an associated DataCite broker.
+    See references:
+    https://support.datacite.org/docs/relationtype_for_citation
+    https://schema.datacite.org/
 
     Parameters
     ----------

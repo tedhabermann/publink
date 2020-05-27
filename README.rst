@@ -124,7 +124,8 @@ Install the package
    {'relation-type-id': 'IsReferencedBy',
     'related-identifier': 'https://doi.org/10.1016/J.GEOMORPH.2015.07.027'},
    {'relation-type-id': 'IsReferencedBy',
-    'related-identifier': 'https://doi.org/10.1002/ESP.4023'}]}]
+    'related-identifier': 'https://doi.org/10.1002/ESP.4023'}]
+	}]
 
 **Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that unlike DOI results further investigation of these results should be considered to validate mentions.
 

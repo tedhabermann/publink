@@ -116,10 +116,145 @@ def eventdata_mentions(eventdata_response):
     return mention
 
 
-def pair_dois(mentions):
-    """Get unique list of paired DOIs.
+def to_related_identifiers(mentions):
+    """Reformat mentions to DataCite related-identifier schema.
 
-    Get unique pairs of publication DOIs with searched terms.
+    Reformats mentions relating two DOIs to DataCite schema that is
+    used to capture related-identifiers.  This format will likely
+    be needed if a user wants to write relationships back to DOIs
+    through DataCite or an associated DataCite broker.
+
+    Parameters
+    ----------
+    mentions: list of dictionaries
+        For those mentions relating 2 DOIs
+        example xdd_search GetMentions.mentions
+            [{'xdd_id':'5d41e5e40b45c76cafa2778c',
+              'pub_doi': '10.3133/OFR20191040',
+              'search_term': '10.5066/P9LYUFRH',
+              'highlight': 'str that ref usgs doi 10.5066/P9LYUFRH''
+               }]
+
+    Returns
+    ----------
+    related_identifiers: list of dictionaries
+        example format shown below
+        [
+        {"doi":"10.5438/0012",
+         "identifier":"https://doi.org/10.5438/0012",
+         "related-identifiers":[
+                {"relation-type-id":"Documents",
+                 "related-identifier":"https://doi.org/10.5438/0013"
+                 },
+                {"relation-type-id":"IsNewVersionOf",
+                 "related-identifier":"https://doi.org/10.5438/0010"
+                 }
+            ]
+         }
+        ]
+
+    """
+    # Get unique pairs
+    unique_pairs = get_unique_pairs(mentions)
+
+    # Get unique list of search term DOIs
+    search_dois = list(set([i["search_term"] for i in unique_pairs]))
+
+    # Get unique list of related pub dois
+    pub_dois = list(set([i["pub_doi"] for i in unique_pairs]))
+
+    # Reduce overall list of dois to test resolve
+    unique_dois = list(set(pub_dois + search_dois))
+
+    resolving_dois, non_resolving_dois = validate_dois(unique_dois)
+
+    related_identifiers = []
+    for doi in search_dois:
+        # Set to DataCite Schema
+        related_ids = [
+            {"relation-type-id": "IsReferencedBy",
+             "related-identifier": f"https://doi.org/{i['pub_doi']}"
+             }
+            for i in unique_pairs
+            if i["pub_doi"] in resolving_dois
+            and i["search_term"] in resolving_dois
+        ]
+
+        if len(related_ids) > 0:
+            related = {"doi": doi,
+                       "identifier": f"https://doi.org/{doi}",
+                       "related-identifiers": related_ids
+                       }
+            related_identifiers.append(related)
+
+    return related_identifiers
+
+
+def resolve_doi(doi):
+    """Test if DOI resolves.
+
+    Validate that a DOI resolves correctly by
+    giving a 302 status code implying it found
+    a redirect.  If for some reason a DOI does not
+    resolve it will give a 404 status.
+
+    Parameters
+    ----------
+    doi: str
+        example format, e.g. '10.5066/F79021VS'
+
+    Returns
+    ----------
+    Bool
+        True: DOI resolves, False: DOI fails to resolve
+
+    Note: This logic is based off initial testing.
+    A better understanding of requests.head and 302
+    status code should be validated. E.g. are all
+    302 codes going to fully resolve if redirect is
+    followed.
+
+    """
+    doi_url = f"https://doi.org/{doi}"
+    r = requests.head(doi_url)
+    if r.status_code == 302:
+        return True
+    else:
+        return False
+
+
+def validate_dois(doi_list):
+    """Validate that each DOI in list resolves.
+
+    Parameters
+    ----------
+    doi_list: list of strings
+        list of DOIs
+        example format ['10.5066/F79021VS']
+
+    Returns
+    ----------
+    resolving_dois: list of strings
+        DOIs that did resolve
+    non_resolving_dois: list of strings
+        DOIs that did not resolve
+
+    """
+    # Ensure we are validating each DOI only once
+    unique_dois = list(set(doi_list))
+
+    non_resolving_dois = []
+    resolving_dois = []
+    for doi in unique_dois:
+        if resolve_doi(doi):
+            resolving_dois.append(doi)
+        else:
+            non_resolving_dois.append(doi)
+    return resolving_dois, non_resolving_dois
+
+
+def get_unique_pairs(mentions):
+    """Get unique pairs of search term and pub DOI.
 
     Parameters
     ----------
@@ -133,7 +268,9 @@ def pair_dois(mentions):
 
     Returns
     ----------
-    pairs: list of dictionaries
+    unique_pairs: dictionary
+        unique sets of publication, search term pairs
+        example format below
         [{'pub_doi': '10.3133/OFR20191040',
           'search_term': '10.5066/P9LYUFRH'
           }]
@@ -146,91 +283,11 @@ def pair_dois(mentions):
     ]
 
     # remove duplicate pairs
-    pairs = [
+    unique_pairs = [
         dict(t) for t in {tuple(d.items()) for d in pairs}
     ]
 
-    return pairs
-
-
-def doi_list_related(pairs):
-    """Create dictionary with list of related dois.
-
-    Puts related DOIs into format used by doi_tool module.
-
-    Parameters
-    ----------
-    pairs: list of dictionaries
-        unique pairs of publication DOIs with searched terms
-        [{'pub_doi': '10.3133/OFR20191040',
-          'search_term': '10.5066/P9LYUFRH'
-          }]
-
-    Returns
-    ----------
-    list_related: list of dictionaries
-        list of dictionary pairs of search terms with pub dois
-        example: [{'pub_dois': ['10.23706/1111111A'],
-                   'search_term': '10.5066/F79021VS'}]
-    """
-    search_terms = [i["search_term"] for i in pairs]
-    unique_terms = list(set(search_terms))
-
-    list_related = []
-    for search_term in unique_terms:
-        rel = [i["pub_doi"] for i in pairs if i["search_term"] == search_term]
-        new_format = {"search_term": search_term, "pub_dois": rel}
-        list_related.append(new_format)
-    return list_related
-
-
-def resolve_doi(doi):
-    """Test if DOI resolves.
-
-    Validate that a DOI resolves.
-
-    Parameters
-    ----------
-    doi: str
-        example format, e.g. '10.5066/F79021VS'
-
-    Returns
-    ----------
-    Bool
-        True: DOI resolves, False: DOI fails to resolve
-
-    """
-    doi_url = f"https://doi.org/{doi}"
-    r = requests.head(doi_url)
-    if r.status_code == 302:
-        return True
-    else:
-        return False
-
-
-def validate_dois(paired_dois):
-    """Validate that DOIs resolve.
-
-    Validate that DOIs of publications and data DOIs resolve.
-
-    """
-    pub_dois = [i["pub_doi"] for i in paired_dois]
-    data_dois = [i["data_doi"] for i in paired_dois]
-
-    # reduce overall list of dois to validate
-    unique_dois = list(set(pub_dois + data_dois))
-
-    non_resolving_dois = []
-    for doi in unique_dois:
-        if not resolve_doi(doi):
-            non_resolving_dois.append(doi)
-            # removes dictionaries that contain doi not resolving
-            paired_dois = [
-                i
-                for i in paired_dois
-                if not (i["data_doi"] == doi or i["pub_doi"] == doi)
-            ]
-    return paired_dois, non_resolving_dois
+    return unique_pairs
 
 
 def doi_formatting(input_doi):

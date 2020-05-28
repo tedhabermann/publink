@@ -29,7 +29,7 @@ Methods to help build relationships between data and the publications they are r
 
 
 Contacts
--------
+--------
 * Daniel Wieferich (dwieferich@usgs.gov)
 * Brandon Serna (bserna@usgs.gov)
 * Madison Langseth (mlangseth@usgs.gov)

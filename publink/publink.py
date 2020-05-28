@@ -199,7 +199,9 @@ def resolve_doi(doi):
     """Test if DOI resolves.
 
     Validate that a DOI resolves correctly by
-    giving a 200 status code after following all redirects.
+    giving a 302 status implies it found a
+    redirect.  This is evidence that the passed
+    URL is likely an active DOI.
     If a DOI does not resolve it will give a 404 status.
 
     Parameters

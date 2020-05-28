@@ -4,14 +4,6 @@ publink package
 Submodules
 ----------
 
-publink.doi\_tool module
-------------------------
-
-.. automodule:: publink.doi_tool
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 publink.publink module
 ----------------------
 

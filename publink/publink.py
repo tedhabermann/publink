@@ -218,8 +218,7 @@ def resolve_doi(doi):
     A better understanding of requests.head and 302
     status code should be validated. E.g. are all
     302 codes going to fully resolve if redirect is
-    followed. DANIEL SEE CHANGES BELOW FOR MY SUGGESTED
-    CHANGES.
+    followed.
 
     """
     doi_url = f"https://doi.org/{doi}"

@@ -194,11 +194,12 @@ class GetMentions:
         Returns
         ----------
         self.mentions: list of dict
-            includes publication xDD id, publication DOI, 
+            includes publication xDD id, publication DOI,
             search term and highlight
             e.g. [{'xdd_id':'5d41e5e40b45c76cafa2778c',
                    'pub_doi': '10.3133/OFR20191040',
                    'search_term': '10.5066/P9LYUFRH',
+                   'certainty': 'most certain'
                    'highlight': 'str that ref usgs doi 10.5066/P9LYUFRH''
                    }]
 
@@ -228,13 +229,14 @@ class GetMentions:
                 )
 
                 for mention in have_prefix:
-                    doi, self.doi_certainty = extract_usgs_doi(
+                    doi, certainty = extract_usgs_doi(
                         hl_words, mention
                     )
                     if doi is not None:
                         related = {"xdd_id": xdd_id,
                                    "pub_doi": pub_doi,
                                    "search_term": doi,
+                                   "certainty": certainty,
                                    "highlight": hl}
                         self.mentions.append(related)
 

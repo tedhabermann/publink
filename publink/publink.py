@@ -307,28 +307,35 @@ def doi_formatting(input_doi):
     ----------
     input_doi: str
 
+    Notes
+    ----------
+    This focuses on known potential issues.  This currently
+    returns no errors, potential improvement for updates.
+
     """
     input_doi = input_doi.upper()
     input_doi = input_doi.replace(" ", "")
     # All DOI prefixes begin with '10'
     if str(input_doi).startswith("10"):
         formatted_doi = str(input_doi)
-    elif str(input_doi).startswith("HTTPS://DOI.ORG/"):
-        formatted_doi = input_doi[16:]  # Remove URL prefix
+    elif str(input_doi).startswith("DOI:"):
+        formatted_doi = input_doi[4:]
     elif str(input_doi).startwith("HTTPS://DOI.ORG/DOI:"):
         formatted_doi = input_doi[20:]
-    elif str(input_doi).startswith("HTTPS://DX.DOI.ORG/"):
-        formatted_doi = input_doi[19:]
     elif str(input_doi).startswith("HTTPS://DX.DOI.ORG/DOI:"):
         formatted_doi = input_doi[23:]
-    elif str(input_doi).startswith("HTTP://DOI.ORG/"):
-        formatted_doi = input_doi[15:]
     elif str(input_doi).startswith("HTTP://DOI.ORG/DOI:"):
         formatted_doi = input_doi[19:]
-    elif str(input_doi).startswith("HTTP://DX.DOI.ORG/"):
-        formatted_doi = input_doi[18:]
     elif str(input_doi).startswith("HTTP://DX.DOI.ORG/DOI:"):
         formatted_doi = input_doi[22:]
+    elif str(input_doi).startswith("HTTPS://DOI.ORG/"):
+        formatted_doi = input_doi[16:]
+    elif str(input_doi).startswith("HTTPS://DX.DOI.ORG/"):
+        formatted_doi = input_doi[19:]
+    elif str(input_doi).startswith("HTTP://DOI.ORG/"):
+        formatted_doi = input_doi[15:]
+    elif str(input_doi).startswith("HTTP://DX.DOI.ORG/"):
+        formatted_doi = input_doi[18:]
     else:
-        formatted_doi = str(input_doi)  
+        formatted_doi = str(input_doi)
     return formatted_doi

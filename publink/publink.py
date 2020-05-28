@@ -330,5 +330,5 @@ def doi_formatting(input_doi):
     elif str(input_doi).startswith("HTTP://DX.DOI.ORG/DOI:"):
         formatted_doi = input_doi[22:]
     else:
-        formatted_doi = str(input_doi)  # DANIEL SHOULD WE RETURN AN ERROR HERE?
+        formatted_doi = str(input_doi)  
     return formatted_doi

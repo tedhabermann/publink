@@ -196,11 +196,13 @@ Note that search and mention variables are objects that contain data and informa
   [{'xdd_id': '5e62d6d1998e17af82642c1c',
     'pub_doi': '10.3133/SIM3428',
     'search_term': '10.5066/P91HL91C',
+	'certainty': 'most certain',
     'highlight': 'ARABIA: U.S. GEOLOGICAL SURVEY DATA RELEASE, DOI:10.5066/P91HL91C. DOWNS, D.T., STELTEN, M.E., CHAMPION,'
 	},
    {'xdd_id': '5e62de89998e17af82642dec',
     'pub_doi': '10.3133/SIR20195140',
     'search_term': '10.5066/F7P55KJN',
+	'certainty': 'most certain',
     'highlight': 'DATABASE, ACCESSED JUNE 10, 2018, AT HTTPS://DOI. ORG/10.5066/F7P55KJN. WHEELER, J.D., AND EDDY-MILLER,'
 	}]
 

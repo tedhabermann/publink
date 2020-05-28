@@ -1,8 +1,0 @@
-# This file may be used to create an environment using:
-# $ conda create --name <env> --file <this file>
-bs4==0.0.1=pypi_0
-flake8==3.7.9=pypi_0
-pytest==5.4.1=pypi_0
-python==3.8.2=h5fd99cc_11
-requests==2.23.0=pypi_0
-

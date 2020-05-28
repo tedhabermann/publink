@@ -222,9 +222,8 @@ def resolve_doi(doi):
 
     """
     doi_url = f"https://doi.org/{doi}"
-    r = requests.head(doi_url, allow_redirects=True)
-    # allow_redirects will show the status code after redirect is followed
-    if r.status_code == 200:
+    r = requests.head(doi_url)
+    if r.status_code == 302:
         return True
     else:
         return False

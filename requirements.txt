@@ -5,5 +5,4 @@ flake8==3.7.9=pypi_0
 pytest==5.4.1=pypi_0
 python==3.8.2=h5fd99cc_11
 requests==2.23.0=pypi_0
-sciencebasepy==1.6.9=pypi_0
-usgs-datatools==1.1.2=pypi_0
+

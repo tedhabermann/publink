@@ -55,6 +55,7 @@ Install the package
 
 
 **Example 1a** queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
+Note that search and mention variables are objects that contain data and information that can be used for reporting (e.g. logs) and QAQC.
 
 .. code-block:: python
 	

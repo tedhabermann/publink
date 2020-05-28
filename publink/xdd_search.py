@@ -228,7 +228,7 @@ class GetMentions:
                 )
 
                 for mention in have_prefix:
-                    doi, doi_certainty = extract_usgs_doi(
+                    doi, self.doi_certainty = extract_usgs_doi(
                         hl_words, mention
                     )
                     if doi is not None:

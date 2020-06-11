@@ -189,7 +189,7 @@ class GetMentions:
         """Pair publication with match of USGS data DOI.
 
         Accounts for splits in DOI, doesn't require exact match.
-        Relies on formating that is specific to all USGS data DOIs.
+        Relies on formatting that is specific to all USGS data DOIs.
 
         Returns
         ----------

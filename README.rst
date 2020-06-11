@@ -37,9 +37,9 @@ Contacts
 
 Purpose
 -------
-Understanding how data are used across the scientific community provides many benefits to data authors including building a better awareness of 1) a dataset's scientific impact 2) use cases to direct future versions, and 3) related efforts.  There are few efforts that help authors track how their data are being used in literature through time.  This is in part due the to a lack of consistency in how data are referenced in scientific publications and whether or not publishers index data citations. The Make Data Count initiative (https://makedatacount.org) is encouraging publishers to implement policies that require that authors cite data in their references list and to index these data citations with Crossref. This initiative will enhance the ability of data authors to track downstream use of their data; however, many publishers have not yet adopted these practices and data citation indexing will likely not happen retroactively.
+Understanding how data are used across the scientific community provides many benefits to data authors including building a better awareness of 1) a dataset's scientific impact, 2) use cases to direct future versions, and 3) related efforts.  There are few efforts that help authors track how their data are being used in literature through time.  This is in part due to a lack of consistency in how data are referenced in scientific publications and whether or not publishers index data citations. The Make Data Count initiative (https://makedatacount.org) is encouraging publishers to implement policies that require that authors cite data in their references list and to index these data citations with Crossref. This initiative will enhance the ability of data authors to track downstream use of their data; however, many publishers have not yet adopted these practices and data citation indexing will likely not happen retroactively.
 
-This package provides methods to help extract and build relationships between publications and the datasets they reference.   Methods have been developed that support pipelines for tracking existing and new relationships through time. The package currently leverages two different sources including the eXtract Dark Data Database (xDD, formally known as GeoDeepDive, https://geodeepdive.org/) and Crossref and DataCite Event Data (https://www.eventdata.crossref.org/guide/).  The xDD digital library of over 12 million publications can be leveraged to search all mentions of search terms, including digital object identifiers.  This unique method allows us to capture relationships that pre-dated adoption of data citation principles (Data Citation Synthesis Group, 2014) and data citation indexing efforts.  Crossref and DataCite Event Data documents relationships between Crossref and DataCite digital object identifiers (DOIs) and other content on the web.  Currently, we leverage their API to extract known references between publication DOIs and datasets of interest.  
+This package provides methods to help extract and build relationships between publications and the datasets they reference.   Methods have been developed that support pipelines for tracking existing and new relationships through time. The package currently leverages two different sources including the eXtract Dark Data Database (xDD, formally known as GeoDeepDive, https://geodeepdive.org/) and Crossref and DataCite Event Data (https://www.eventdata.crossref.org/guide/).  The xDD digital library of over 12 million publications can be leveraged to search all mentions of search terms, including digital object identifiers (DOIs).  This unique method allows us to capture relationships that pre-dated adoption of data citation principles (Data Citation Synthesis Group, 2014) and data citation indexing efforts.  Crossref and DataCite Event Data documents relationships between Crossref and DataCite DOIs and other content on the web.  Currently, we leverage their API to extract known references between publication DOIs and datasets of interest.  
 
 We also include methods demonstrating how you can store relationships discovered with publink within the DataCite DOI metadata.  Storing these relationships in the DOI metadata allows relationships discovered through xDD to be included in Event Data. It also allows the use of this information in other tools such as downstream data repositories.
  
@@ -55,7 +55,7 @@ Install the package
 
 
 **Example 1a** queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.
-Note that search and mention variables are objects that contain data and information that can be used for reporting (e.g. logs) and QAQC.
+Note that search and mention variables are objects that contain data and information that can be used for reporting (e.g. logs) and Quality Assurance/Quality Control (QAQC).
 
 .. code-block:: python
 	
@@ -129,7 +129,7 @@ Note that search and mention variables are objects that contain data and informa
     'related-identifier': 'https://doi.org/10.1002/ESP.4023'}]
 	}]
 
-**Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that, unlike DOI results, further investigation of these results should be considered to validate mentions. This method is ideal for datasets without assigned DOIs or for datasets with DOIs that were assigned after intial dataset publication.
+**Example 2** queries xDD for mentions of two dataset title names and returns relationships between publications and the searched DOIs. Note that, unlike DOI results, further investigation of these results should be considered to validate mentions. This method is ideal for datasets without assigned DOIs or for datasets with DOIs that were assigned after initial dataset publication.
 
 .. code-block:: python
 	
@@ -169,7 +169,7 @@ Note that search and mention variables are objects that contain data and informa
      'highlight': 'DATABASE OF THE UNITED STATES (PAD-US, VERSION 1.4) (DELLASALA ET AL., 2001; USGS,'
 	 }]
 
-**Example 3** queries xDD for mentions of all USGS DOIs with the prefix "10.5066" and returns relationships between publications and the USGS data DOIs. This technique requires prior knowledge of DOI format and currently uses methods specific to USGS (e.g. all DOIs are 16 characters long). 
+**Example 3** queries xDD for mentions of all USGS DOIs with the prefix "10.5066" and returns relationships between publications and the USGS data DOIs. This technique requires prior knowledge of DOI format and currently uses methods specific to USGS (e.g. all USGS DOIs are 16 characters long). 
 
 .. code-block:: python
 	

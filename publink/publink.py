@@ -299,7 +299,7 @@ def get_unique_pairs(mentions):
 def doi_formatting(input_doi):
     """Reformat loosely structured DOIs.
 
-    Currently only doing simplistic removal of 8 common http prefix
+    Currently only doing simplistic removal of 8 common http prefixes
     and changing case to upper.
     End DOI should be in format 10.NNNN/*, not as url
 
@@ -320,7 +320,7 @@ def doi_formatting(input_doi):
         formatted_doi = str(input_doi)
     elif str(input_doi).startswith("DOI:"):
         formatted_doi = input_doi[4:]
-    elif str(input_doi).startwith("HTTPS://DOI.ORG/DOI:"):
+    elif str(input_doi).startswith("HTTPS://DOI.ORG/DOI:"):
         formatted_doi = input_doi[20:]
     elif str(input_doi).startswith("HTTPS://DX.DOI.ORG/DOI:"):
         formatted_doi = input_doi[23:]

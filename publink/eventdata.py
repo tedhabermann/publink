@@ -26,8 +26,9 @@ class SearchEventdata:
 
         Notes
         ----------
-        In dev this api fails more times than succeeds and may require
-        several attempts before getting successful return
+        In development of the eventdata module this api
+        failed more times than it succeeded and required
+        several attempts before getting successful a return
 
         """
         self.base_url = "https://api.eventdata.crossref.org/v1/events?"

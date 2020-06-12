@@ -33,7 +33,7 @@ def search_xdd(search_terms, account_for_spaces=True):
     return search
 
 
-def xdd_mentions(xdd_response, search_terms, search_type='exact_match', is_doi=False):
+def xdd_mentions(xdd_response, search_terms, search_type="exact_match", is_doi=False):
     """Get mentions of search term from xDD.
 
     Parameters
@@ -55,9 +55,9 @@ def xdd_mentions(xdd_response, search_terms, search_type='exact_match', is_doi=F
 
     """
     mention = xdd_search.GetMentions(xdd_response, search_terms)
-    if search_type == 'exact_match':
+    if search_type == "exact_match":
         mention.get_exact_mention(is_doi)
-    elif search_type == 'usgs':
+    elif search_type == "usgs":
         mention.get_usgs_doi_mentions()
 
     return mention
@@ -177,19 +177,20 @@ def to_related_identifiers(mentions):
     for doi in search_dois:
         # Set to DataCite Schema
         related_ids = [
-            {"relation-type-id": "IsReferencedBy",
-             "related-identifier": f"https://doi.org/{i['pub_doi']}"
-             }
+            {
+                "relation-type-id": "IsReferencedBy",
+                "related-identifier": f"https://doi.org/{i['pub_doi']}",
+            }
             for i in unique_pairs
-            if i["pub_doi"] in resolving_dois
-            and i["search_term"] in resolving_dois
+            if i["pub_doi"] in resolving_dois and i["search_term"] in resolving_dois
         ]
 
         if len(related_ids) > 0:
-            related = {"doi": doi,
-                       "identifier": f"https://doi.org/{doi}",
-                       "related-identifiers": related_ids
-                       }
+            related = {
+                "doi": doi,
+                "identifier": f"https://doi.org/{doi}",
+                "related-identifiers": related_ids,
+            }
             related_identifiers.append(related)
 
     return related_identifiers
@@ -283,15 +284,11 @@ def get_unique_pairs(mentions):
 
     """
     pairs = [
-        {"pub_doi": i["pub_doi"],
-         "search_term":i["search_term"]
-         } for i in mentions
+        {"pub_doi": i["pub_doi"], "search_term": i["search_term"]} for i in mentions
     ]
 
     # remove duplicate pairs
-    unique_pairs = [
-        dict(t) for t in {tuple(d.items()) for d in pairs}
-    ]
+    unique_pairs = [dict(t) for t in {tuple(d.items()) for d in pairs}]
 
     return unique_pairs
 

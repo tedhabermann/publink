@@ -50,10 +50,10 @@ class SearchEventdata:
             List of urls to query.
 
         """
-        if self.search_type == 'doi':
+        if self.search_type == "doi":
             q = f"mailto={self.mailto}&rows={rows}&obj-id={self.search_term}"
             self.search_url = f"{self.base_url}{q}"
-        elif self.search_type == 'doi_prefix':
+        elif self.search_type == "doi_prefix":
             q = f"mailto={self.mailto}&rows={rows}&obj-id.prefix={self.search_term}"
             self.search_url = f"{self.base_url}{q}"
         else:
@@ -69,10 +69,10 @@ class SearchEventdata:
         """Query eventdata."""
         while self.next_url is not None:
             r = requests.get(self.next_url)
-            if r.status_code == 200 and r.json()['status'] == 'ok':
+            if r.status_code == 200 and r.json()["status"] == "ok":
                 json_response = r.json()
-                self.response_hits = json_response['message']['total-results']
-                page_data = json_response['message']['events']
+                self.response_hits = json_response["message"]["total-results"]
+                page_data = json_response["message"]["events"]
                 self.response_data.extend(page_data)
                 if json_response["message"]["next-cursor"] is None:
                     self.next_url = None
@@ -84,12 +84,14 @@ class SearchEventdata:
                 self.response_message = "Successful response."
             else:
                 self.next_url = ""
-                if r.status_code == 200 and r.json()['status'] == 'failed':
+                if r.status_code == 200 and r.json()["status"] == "failed":
                     self.response_status = "no data"
                     self.response_message = f"failed request: {r.json()['message']}"
                 elif r.status_code != 200:
                     self.response_status = "error"
-                    self.response_message = f"failed request: status code {r.status_code}"
+                    self.response_message = (
+                        f"failed request: status code {r.status_code}"
+                    )
                     break
                 else:
                     self.response_status = "error"
@@ -127,12 +129,16 @@ class GetRelated:
         self.related_dois = []
         for event in self.events:
             doi_prefix = "https://doi.org/"
-            if doi_prefix in event["obj_id"] and \
-               doi_prefix in event["subj_id"] and \
-               event['relation_type_id'] == 'references':
+            if (
+                doi_prefix in event["obj_id"]
+                and doi_prefix in event["subj_id"]
+                and event["relation_type_id"] == "references"
+            ):
 
-                related = {"event_id": event["id"],
-                           "pub_doi": event["subj_id"].split(doi_prefix)[1],
-                           "search_term": event["obj_id"].split(doi_prefix)[1],
-                           "source": event["source_id"]}
+                related = {
+                    "event_id": event["id"],
+                    "pub_doi": event["subj_id"].split(doi_prefix)[1],
+                    "search_term": event["obj_id"].split(doi_prefix)[1],
+                    "source": event["source_id"],
+                }
                 self.related_dois.append(related)

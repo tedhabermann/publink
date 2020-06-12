@@ -51,7 +51,7 @@ Getting Started
 ---------------
 Install the package
 
-* pip install git+ssh://git@code.usgs.gov/sas/sdm/publink
+* pip install git+https://github.com/usgs-biolab/publink.git
 
 
 **Example 1a** queries xDD for mentions of two DOIs and returns relationships between publications and the searched DOIs.

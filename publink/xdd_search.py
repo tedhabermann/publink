@@ -162,22 +162,24 @@ class GetMentions:
                 hl = hl.upper()
                 if is_doi:
                     related = [
-                        {"xdd_id": xdd_id,
-                         "pub_doi": pub_doi,
-                         "search_term": publink.doi_formatting(i),
-                         "highlight": hl
-                         }
+                        {
+                            "xdd_id": xdd_id,
+                            "pub_doi": pub_doi,
+                            "search_term": publink.doi_formatting(i),
+                            "highlight": hl,
+                        }
                         for i in self.search_terms
                         if i.upper() in hl
                     ]
 
                 else:
                     related = [
-                        {"xdd_id": xdd_id,
-                         "pub_doi": pub_doi,
-                         "search_term": i.upper(),
-                         "highlight": hl
-                         }
+                        {
+                            "xdd_id": xdd_id,
+                            "pub_doi": pub_doi,
+                            "search_term": i.upper(),
+                            "highlight": hl,
+                        }
                         for i in self.search_terms
                         if i.upper() in hl
                     ]
@@ -219,25 +221,19 @@ class GetMentions:
                 hl_words = hl.split(" ")
                 # get words from snippet with search prefix
                 have_prefix = list(
-                    set(
-                        [
-                            hl_word
-                            for hl_word in hl_words
-                            if prefix in hl_word
-                        ]
-                    )
+                    set([hl_word for hl_word in hl_words if prefix in hl_word])
                 )
 
                 for mention in have_prefix:
-                    doi, certainty = extract_usgs_doi(
-                        hl_words, mention
-                    )
+                    doi, certainty = extract_usgs_doi(hl_words, mention)
                     if doi is not None:
-                        related = {"xdd_id": xdd_id,
-                                   "pub_doi": pub_doi,
-                                   "search_term": doi,
-                                   "certainty": certainty,
-                                   "highlight": hl}
+                        related = {
+                            "xdd_id": xdd_id,
+                            "pub_doi": pub_doi,
+                            "search_term": doi,
+                            "certainty": certainty,
+                            "highlight": hl,
+                        }
                         self.mentions.append(related)
 
 
@@ -258,9 +254,7 @@ def clean_highlight(highlight_txt, search_terms, usgs_prefix="10.5066"):
 
     """
     highlight_txt = highlight_txt.upper()
-    hl_nohtml = bs4.BeautifulSoup(
-        highlight_txt, features="html.parser"
-    ).get_text()
+    hl_nohtml = bs4.BeautifulSoup(highlight_txt, features="html.parser").get_text()
     hl_clean = clean_unicode(hl_nohtml)
 
     included_terms = [i.upper() for i in search_terms if i in hl_clean]

@@ -75,9 +75,7 @@ def test_extract_usgs_doi():
     for test in test_snippets:
         all_dois = []
         hl_words = test["snippet"].split(" ")
-        have_prefix = list(
-            set([hl_word for hl_word in hl_words if prefix in hl_word])
-        )
+        have_prefix = list(set([hl_word for hl_word in hl_words if prefix in hl_word]))
 
         for mention in have_prefix:
             extract_doi = xdd_search.extract_usgs_doi(hl_words, mention)

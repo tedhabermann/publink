@@ -3,7 +3,7 @@
       "name": "publink",
       "organization": "U.S. Geological Survey",
       "description": "This Python package contains methods to help build relationships between data and the publications they are referenced in.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "status": "Production",
   
       "permissions": {

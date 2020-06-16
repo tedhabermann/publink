@@ -81,7 +81,7 @@ Note that search and mention variables are objects that contain data and informa
 	
 **Example 1a results** of print statement to show output data structure.  Note values may differ as xDD is updated.
 
-.. code-block:: JSON
+.. code-block::
 
   [{'xdd_id': '5a0493b1cf58f1b96402aa7c',
     'pub_doi': '10.1002/2017WR020457',
@@ -107,11 +107,11 @@ Note that search and mention variables are objects that contain data and informa
 	
 **Example 1b results** of print statement to show output data structure.  Note values may differ as xDD is updated.
 
-.. code-block:: JSON
+.. code-block:: 
 
   [{'doi': '10.5066/F7K935KT',
-  'identifier': 'https://doi.org/10.5066/F7K935KT',
-  'related-identifiers': [{'relation-type-id': 'IsReferencedBy',
+    'identifier': 'https://doi.org/10.5066/F7K935KT',
+    'related-identifiers': [{'relation-type-id': 'IsReferencedBy',
     'related-identifier': 'https://doi.org/10.1002/WAT2.1164'},
    {'relation-type-id': 'IsReferencedBy',
     'related-identifier': 'https://doi.org/10.3133/OFR20161132'},
@@ -156,7 +156,7 @@ Note that search and mention variables are objects that contain data and informa
 	
 **Example 2 results** of print statement to show output data structure.  Note values may differ as xDD is updated. Additionally, note that PAD-US version 1.4 was assigned a DOI; however, the publication found in xDD did not reference the DOI.
 
-.. code-block:: JSON
+.. code-block::
 
   [{'xdd_id': '5c1c34751faed655488963fc',
     'pub_doi': '10.1016/J.FORPOL.2018.03.009',
@@ -191,7 +191,7 @@ Note that search and mention variables are objects that contain data and informa
 	
 **Example 3 results** of print statement to show output data structure.  Note values may differ as xDD is updated.
 
-.. code-block:: JSON
+.. code-block::
 
   [{'xdd_id': '5e62d6d1998e17af82642c1c',
     'pub_doi': '10.3133/SIM3428',
@@ -235,7 +235,7 @@ Note that search and mention variables are objects that contain data and informa
 	
 **Example 4 results** of print statements to show output data structure.  Note values may differ as eventdata is updated.
 
-.. code-block:: JSON
+.. code-block::
 
   Successful response.
   

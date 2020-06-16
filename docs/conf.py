@@ -49,8 +49,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "publink"
-copyright = "2020, Madison Langseth"
-author = "Madison Langseth"
+author = "Daniel Wieferich"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -126,7 +125,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "publink.tex", "publink Documentation", "Madison Langseth", "manual",),
+    (master_doc, "publink.tex", "publink Documentation", "Daniel Wieferich", "manual",),
 ]
 
 

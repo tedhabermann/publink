@@ -257,14 +257,16 @@ Documentation can be found https://publink.readthedocs.io
 
 Documentation HTML can be generated using this command from the docs folder. 
 
-``
-make html
-``
+.. code-block::
+
+	make docs
+
 
 Copyright and License
 ---------------------
-This USGS product is considered to be in the U.S. public domain, and is licensed under
-[unlicense](https://unlicense.org/).
+This USGS product is considered to be in the U.S. public domain, and is licensed under unlicense_
+
+.. _unlicense: https://unlicense.org/
 
 This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS). No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.
 

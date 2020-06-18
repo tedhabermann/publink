@@ -4,6 +4,14 @@ publink package
 Submodules
 ----------
 
+publink.eventdata module
+------------------------
+
+.. automodule:: publink.eventdata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 publink.publink module
 ----------------------
 

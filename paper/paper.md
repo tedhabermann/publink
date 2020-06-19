@@ -28,6 +28,7 @@ authors:
     affiliation: "2"
   - name: Ian Ross
     orcid: 0000-0003-1888-1689
+    affiliation: "2"
 affiliations:
  - name: U.S. Geological Survey
    index: 1

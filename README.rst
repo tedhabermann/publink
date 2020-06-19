@@ -12,9 +12,6 @@ publink
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
-   
-.. image:: https://img.shields.io/travis/mlangseth/publink.svg
-        :target: https://travis-ci.com/mlangseth/publink
 
 .. image:: https://readthedocs.org/projects/publink/badge/?version=latest
         :target: https://publink.readthedocs.io/en/latest/?badge=latest
@@ -27,6 +24,8 @@ Methods to help build relationships between data and the publications they are r
 * Documentation: https://publink.readthedocs.io.
 
 
+.. image:: logo.JPG
+    :width: 50 %
 
 Contacts
 --------

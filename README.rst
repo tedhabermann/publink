@@ -24,7 +24,7 @@ publink
     :target: https://github.com/PyCQA/bandit
     :alt: Security Status
 
-Methods to help build relationships between data and the publications they are referenced in.
+Python package with methods to help build relationships between data and the publications they are referenced in.
 
 * Free software: unlicense
 * Documentation: https://publink.readthedocs.io.
@@ -42,12 +42,18 @@ Contacts
 
 Purpose
 -------
-Understanding how data are used across the scientific community provides many benefits to data authors including building a better awareness of 1) a dataset's scientific impact, 2) use cases to direct future versions, and 3) related efforts.  There are few efforts that help authors track how their data are being used in literature through time.  This is in part due to a lack of consistency in how data are referenced in scientific publications and whether or not publishers index data citations. The Make Data Count initiative (https://makedatacount.org) is encouraging publishers to implement policies that require that authors cite data in their references list and to index these data citations with Crossref. This initiative will enhance the ability of data authors to track downstream use of their data; however, many publishers have not yet adopted these practices and data citation indexing will likely not happen retroactively.
+Understanding how data are used across the scientific community provides many benefits to data authors, including building a better awareness and comprehension of 1) a dataset's scientific impact, 2) use cases to direct future versions, and 3) related efforts. Effectively tracking when and how data are used in the literature through time can be challenging.  This is in part due the to a lack of consistency in how data are referenced in scientific publications and whether or not publishers index data citations [@Green:2009;@Corti et al. 2019]. The Make Data Count initiative (https://makedatacount.org) is encouraging publishers to implement standard data citation policies, including requiring that authors cite data in their references list using digital object identifiers (DOIs) or other globally unique and persistent identifiers, and indexing these data citations with Crossref. This initiative will enhance the ability of data authors to track downstream use of their data. Many publishers are adopting these practices [@Cousijn:2018]; however, data citation indexing will likely not happen retroactively.
 
-This package provides methods to help extract and build relationships between publications and the datasets they reference.   Methods have been developed that support pipelines for tracking existing and new relationships through time. The package currently leverages two different sources including the eXtract Dark Data Database (xDD, formally known as GeoDeepDive, https://geodeepdive.org/) and Crossref and DataCite Event Data (https://www.eventdata.crossref.org/guide/).  The xDD digital library of over 12 million publications can be leveraged to search all mentions of search terms, including digital object identifiers (DOIs).  This unique method allows us to capture relationships that pre-dated adoption of data citation principles (Data Citation Synthesis Group, 2014) and data citation indexing efforts.  Crossref and DataCite Event Data documents relationships between Crossref and DataCite DOIs and other content on the web.  Currently, we leverage their API to extract known references between publication DOIs and datasets of interest.  
+Publink provides methods to extract and build relationships between publications and the datasets they reference. Methods are included to support pipelines for tracking existing and new relationships through time. The package currently leverages two different sources of information: 1) the eXtract Dark Data (xDD) digital library and machine reading system (formally known as GeoDeepDive, https://geodeepdive.org/), and 2) Crossref Event Data (https://www.eventdata.crossref.org/guide/).
 
-We also include methods demonstrating how you can store relationships discovered with publink within the DataCite DOI metadata.  Storing these relationships in the DOI metadata allows relationships discovered through xDD to be included in Event Data. It also allows the use of this information in other tools such as downstream data repositories.
- 
+xDD is a digital library consisting of over 12.5 million publications that grows by some 8,000 documents daily via automated fetching mechanisms from multiple commercial and open access providers. xDD is deployed over cyberinfrastructure capable of supporting many different text and data mining applications. Publink uses the REST-full xDD application programming interface (API) to search for mentions of dataset-relevant terms, including dataset DOIs or titles, within the full-text content of the entire digital library. This unique method allows Publink to capture references to datasets that pre-date adoption of data citation principles [@Data Citation Synthesis Group:2014] and data citation indexing efforts [@Cousijn:2018]. In addition to providing flexible full-text search and retrieval of document metadata, the xDD API also surfaces snippets of text that surround the specified search terms. This contextualization allows individual mentions of target search terms within the retrieved document metadata to be assessed, through both manual and automated mechanisms.   
+
+The metadata schema for Crossref DOIs contains an element for a list of items cited by the publication and an element for related identifiers [@Crossref:2020]. @Cousijn:2018 encourages publishers to use one of these methods to document data citations from publications. Likewise, the metadata schema for DataCite DOIs contains an element for related identifiers to link the dataset to other related resources such as citing publications and other datasets [@DataCite Metadata Working Group: 2019]. Crossref Event Data brings these documented relationships together in one location and also documents relationships between Crossref and DataCite DOIs and other content on the web, such as Twitter or Reddit mentions. Publink extracts relationships from Crossref Event Data that indicate a publication is citing a dataset of interest. 
+
+Publink can accept three types of input to search for relationships between data citations and publications: 1) Dataset search terms, such as the dataset title, 2) Dataset DOIs, or 3) DOI prefix for an organization. Only xDD can be queried for search terms. Both xDD and Crossref Event Data can be queried for dataset DOIs and DOI prefixes. As such, publink can be useful for individual authors, project teams, and organizations to discover how their data are being used in publications. Publink also includes methods that transform and store relationships between DOIs using properties and formats consistsent with the DataCite Schema [@DataCite Metadata Working Group: 2019]. 
+
+USGS is using publink methods to discover mentions of our own data products in scientific publications. Relationships between data and publications are tracked in the DOI metadata of our data products. This facilitates sharing of the information to our data authors and others through DataCite and Crossref Event Data.
+
 Requirements
 ------------
 Requirements.txt shows condensed version of packages, while requirements_dev shows a full list of packages used in development.
@@ -253,7 +259,17 @@ Note that search and mention variables are objects that contain data and informa
 
 References
 ---------------------
-Data Citation Synthesis Group, 2014, Joint Declaration of Data Citation Principles, Martone M. (ed.): FORCE11, https://doi.org/10.25490/a97f-egyk.
+Corti, L., V. Van den Eynden, B. Libby, and M. Wollard.  Oct 2019. Managing and Sharing Research Data A Guide to Good Practice Second Edition. London, Sage Publications Ltd.
+
+Cousijn, Helena, Amye Kenall, Emma Ganley, Melissa Harrison, David Kernohan, Thomas Lemberger, Fiona Murphy, Patrick Polischuk, Simone Taylor, Maryann Martone, and Tim Clark. 2018. A data citation roadmap for scientific publishers. Sci Data 5, 180259. https://doi.org/10.1038/sdata.2018.259.
+
+Crossref. 2020. "Deposit Schema 4.4.2." Accessed June 19, 2020. https://data.crossref.org/reports/help/schema_doc/4.4.2/index.html.
+
+Data Citation Synthesis Group. 2014. Joint Declaration of Data Citation Principles. Martone M. (ed.) San Diego CA: FORCE11. https://doi.org/10.25490/a97f-egyk.
+
+DataCite Metadata Working Group. 2019. DataCite Metadata Schema Documentation for the Publication and Citation of Research Data. Version 4.3. DataCite e.V. https://doi.org/10.14454/7xq3-zf69.
+
+Green, Toby. We need publishing standards for datasets and data tables. Learned Publishing. Oct 2009. https://doi.org/10.1087/20090411.
 
 
 Documentation

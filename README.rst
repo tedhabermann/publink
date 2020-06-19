@@ -5,18 +5,24 @@ publink
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/ambv/black
 
-.. image:: https://img.shields.io/badge/security-bandit-yellow.svg
-    :target: https://github.com/PyCQA/bandit
-    :alt: Security Status
+.. image:: https://readthedocs.org/projects/publink/badge/?version=latest
+        :target: https://publink.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
+.. image:: https://codecov.io/gh/usgs-biolab/publink/branch/main/graph/badge.svg
+  :target: https://codecov.io/gh/usgs-biolab/publink
 
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
-.. image:: https://readthedocs.org/projects/publink/badge/?version=latest
-        :target: https://publink.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+.. image:: https://github.com/usgs-biolab/publink/workflows/Python%20package/badge.svg
+    :target: https://github.com/usgs-biolab/publink/actions?query=workflow%3A%22Python+package%22t
+    :alt: Github Actions
 
+.. image:: https://img.shields.io/badge/security-bandit-yellow.svg
+    :target: https://github.com/PyCQA/bandit
+    :alt: Security Status
 
 Methods to help build relationships between data and the publications they are referenced in.
 

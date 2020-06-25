@@ -29,6 +29,7 @@ class SearchEventdata:
         In development of the eventdata module this api
         failed more times than it succeeded and required
         several attempts before getting successful a return
+        https://www.crossref.org/blog/events-got-the-better-of-us/
 
         """
         self.base_url = "https://api.eventdata.crossref.org/v1/events?"

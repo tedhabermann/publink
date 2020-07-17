@@ -11,7 +11,6 @@ Welcome to publink's documentation!
    modules
    contributing
    authors
-   history
 
 Indices and tables
 ==================

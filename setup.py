@@ -7,8 +7,7 @@ from setuptools import setup
 with open("README.rst") as readme_file:
     readme = readme_file.read()
 
-with open("HISTORY.rst") as history_file:
-    history = history_file.read()
+
 
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
@@ -37,8 +36,7 @@ setup(
     ],
     description="Process to help link publications to data using DOIs.",
     install_requires=requirements,
-    #    license="",
-    long_description=readme + "\n\n" + history,
+    long_description=readme,
     include_package_data=True,
     keywords="publink",
     name="publink",

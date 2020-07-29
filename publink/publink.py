@@ -178,7 +178,7 @@ def to_related_identifiers(mentions):
         # Set to DataCite Schema
         related_ids = [
             {
-                "relation-type-id": "IsReferencedBy",
+                "relation-type-id": "IsCitedBy",
                 "related-identifier": f"https://doi.org/{i['pub_doi']}",
             }
             for i in unique_pairs

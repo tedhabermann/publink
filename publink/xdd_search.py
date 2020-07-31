@@ -154,10 +154,8 @@ class GetMentions:
         self.mentions = []
         for ref in self.response_data:
             xdd_id = ref["_gddid"]
-            if "doi" in ref.keys() and ref["doi"] != "":
-                pub_doi = publink.doi_formatting(ref["doi"])
-            else:
-                pub_doi = ""
+            pub_doi = get_pub_doi(ref)
+
             for hl in ref["highlight"]:
                 hl = hl.upper()
                 if is_doi:
@@ -210,10 +208,7 @@ class GetMentions:
         prefix = "10.5066"
         for ref in self.response_data:
             xdd_id = ref["_gddid"]
-            if "doi" in ref.keys() and ref["doi"] != "":
-                pub_doi = publink.doi_formatting(ref["doi"])
-            else:
-                pub_doi = ""
+            pub_doi = get_pub_doi(ref)
 
             for hl in ref["highlight"]:
                 hl = clean_highlight(hl, self.search_terms, prefix)
@@ -319,9 +314,30 @@ def extract_usgs_doi(hl_words, mention, usgs_prefix="10.5066"):
 def clean_unicode(full_txt):
     """Deal with some escaped unicode issues.
 
+    Parameters
+    ----------
+    full_txt: str
+        String that may contain unicode.
+        This function focuses on text from xDD highlights.
+
     Notes
     ----------
     Short term solution, reported to xDD
     """
-    full_txt = re.sub(r"\u200b|\u2009|\u200a|\xa0", "", full_txt,)
+    full_txt = re.sub(r"\u200b|\u2003|\u2009|\u200a|\xa0", "", full_txt,)
     return full_txt
+
+
+def get_pub_doi(ref):
+    """Get publication DOIs from snippets.
+
+    Parameters
+    ----------
+    ref: dict
+
+    """
+    pub_doi = publink.doi_formatting(
+        ref['doi']
+    ) if "doi" in ref.keys() and ref["doi"] != "" else ""
+
+    return pub_doi

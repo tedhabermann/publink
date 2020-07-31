@@ -143,12 +143,12 @@ def to_related_identifiers(mentions):
     Returns
     ----------
     related_identifiers: list of dictionaries
-        example format shown below
+        mock example format shown below
         [
         {"doi":"10.5438/0012",
          "identifier":"https://doi.org/10.5438/0012",
          "related-identifiers":[
-                {"relation-type-id":"Documents",
+                {"relation-type-id": "IsCitedBy",
                  "related-identifier":"https://doi.org/10.5438/0013"
                  },
                 {"relation-type-id":"IsNewVersionOf",
@@ -163,10 +163,14 @@ def to_related_identifiers(mentions):
     unique_pairs = get_unique_pairs(mentions)
 
     # Get unique list of search term DOIs
-    search_dois = list(set([i["search_term"] for i in unique_pairs]))
+    search_dois = list(set(
+        [i["search_term"] for i in unique_pairs]
+    ))
 
     # Get unique list of related pub dois
-    pub_dois = list(set([i["pub_doi"] for i in unique_pairs]))
+    pub_dois = list(set(
+        [i["pub_doi"] for i in unique_pairs]
+    ))
 
     # Reduce overall list of dois to test resolve
     unique_dois = list(set(pub_dois + search_dois))
@@ -184,6 +188,7 @@ def to_related_identifiers(mentions):
             for i in unique_pairs
             if i["pub_doi"] in resolving_dois and i["search_term"] in resolving_dois
         ]
+        related_ids = [dict(t) for t in {tuple(d.items()) for d in related_ids}]
 
         if len(related_ids) > 0:
             related = {
@@ -249,14 +254,8 @@ def validate_dois(doi_list):
     """
     # Ensure we are validating each DOI only once
     unique_dois = list(set(doi_list))
-
-    non_resolving_dois = []
-    resolving_dois = []
-    for doi in unique_dois:
-        if resolve_doi(doi):
-            resolving_dois.append(doi)
-        else:
-            non_resolving_dois.append(doi)
+    resolving_dois = [i for i in unique_dois if resolve_doi(i)]
+    non_resolving_dois = [i for i in unique_dois if i not in resolving_dois]
     return resolving_dois, non_resolving_dois
 
 
@@ -270,7 +269,7 @@ def get_unique_pairs(mentions):
             [{'xdd_id':'5d41e5e40b45c76cafa2778c',
               'pub_doi': '10.3133/OFR20191040',
               'search_term': '10.5066/P9LYUFRH',
-              'highlight': 'str that ref usgs doi 10.5066/P9LYUFRH''
+              'highlight': 'str that ref usgs doi 10.5066/P9LYUFRH'
                }]
 
     Returns
@@ -284,7 +283,9 @@ def get_unique_pairs(mentions):
 
     """
     pairs = [
-        {"pub_doi": i["pub_doi"], "search_term": i["search_term"]} for i in mentions
+        {"pub_doi": i["pub_doi"],
+         "search_term": i["search_term"]
+         } for i in mentions if 'pub_doi' in i and 'search_term' in i
     ]
 
     # remove duplicate pairs

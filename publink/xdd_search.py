@@ -154,6 +154,9 @@ class GetMentions:
         self.mentions = []
         for ref in self.response_data:
             xdd_id = ref["_gddid"]
+            pub_title =   ref.get('title')
+            pub_date =    ref.get('coverDate')
+            pub_journal = ref.get('pubname')
             pub_doi = get_pub_doi(ref)
 
             for hl in ref["highlight"]:
@@ -163,18 +166,23 @@ class GetMentions:
                         {
                             "xdd_id": xdd_id,
                             "pub_doi": pub_doi,
+                            "pub_title": pub_title,                 # add more information into mention
+                            "pub_date":  pub_date,
+                            "pub_journal": pub_journal,
                             "search_term": publink.doi_formatting(i),
                             "highlight": hl,
                         }
                         for i in self.search_terms
                         if i.upper() in hl
                     ]
-
                 else:
                     related = [
                         {
                             "xdd_id": xdd_id,
                             "pub_doi": pub_doi,
+                            "pub_title": pub_title,                 # add more information into mention
+                            "pub_date":  pub_date,
+                            "pub_journal": pub_journal,
                             "search_term": i.upper(),
                             "highlight": hl,
                         }

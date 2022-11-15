@@ -142,8 +142,11 @@ class GetMentions:
             includes publication xDD id, publication DOI and search term
             e.g. [{'xdd_id':'5d41e5e40b45c76cafa2778c',
                    'pub_doi':'10.1111/eva.12645',
+                   'pub_title': 'Evaluating the potential for prezygotic isolation and hybridization between landlocked and anadromous alewife ( Alosa pseudoharengus ) following secondary contact',
+                   'pub_date': '2018 10',
+                   'pub_journal': 'Evolutionary Applications',
                    'search_term':'10.6084/m9.figshare.5234068',
-                   'highlight': 'str that ref term 10.6084/m9.figshare.5234068'
+                   'highlight': 'str that references term 10.6084/m9.figshare.5234068'
                    }]
 
         Notes
@@ -154,9 +157,9 @@ class GetMentions:
         self.mentions = []
         for ref in self.response_data:
             xdd_id = ref["_gddid"]
-            pub_title =   ref.get('title')
-            pub_date =    ref.get('coverDate')
-            pub_journal = ref.get('pubname')
+            pub_title =   ref.get("title", "")
+            pub_date =    ref.get("coverDate", "")
+            pub_journal = ref.get("pubname", "")
             pub_doi = get_pub_doi(ref)
 
             for hl in ref["highlight"]:
@@ -166,7 +169,7 @@ class GetMentions:
                         {
                             "xdd_id": xdd_id,
                             "pub_doi": pub_doi,
-                            "pub_title": pub_title,                 # add more information into mention
+                            "pub_title": pub_title,
                             "pub_date":  pub_date,
                             "pub_journal": pub_journal,
                             "search_term": publink.doi_formatting(i),
@@ -180,7 +183,7 @@ class GetMentions:
                         {
                             "xdd_id": xdd_id,
                             "pub_doi": pub_doi,
-                            "pub_title": pub_title,                 # add more information into mention
+                            "pub_title": pub_title,
                             "pub_date":  pub_date,
                             "pub_journal": pub_journal,
                             "search_term": i.upper(),

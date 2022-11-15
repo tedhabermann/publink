@@ -2,4 +2,4 @@
 
 __author__ = """Daniel Wieferich"""
 __email__ = "dwieferich@usgs.gov"
-__version__ = "__version__ = '1.0.0'"
+__version__ = "__version__ = '1.1.0'"

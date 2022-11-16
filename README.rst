@@ -96,11 +96,17 @@ Note that search and mention variables are objects that contain data and informa
 
   [{'xdd_id': '5a0493b1cf58f1b96402aa7c',
     'pub_doi': '10.1002/2017WR020457',
+    'pub_title': 'Dam removal: Listening in',
+	'pub_date': '2017 07',
+	'pub_journal': 'Water Resources Research',
     'search_term': '10.5066/F7K935KT',
     'highlight': 'DATABASE, IN U.S. GEOLOGICAL SURVEY DATA RELEASE, DOI:10.5066/F7K935KT. BELLMORE,'
 	},
    {'xdd_id': '585b4a6ccf58f1a722da91ea',
     'pub_doi': '10.1002/ESP.4023',
+	'pub_title': 'Geomorphic monitoring and response to two dam removals: rivers Urumea and Leitzaran (Basque Country, Spain)',
+	'pub_date': '2016',
+	'pub_journal': 'Earth Surface Processes and Landforms',
     'search_term': '10.5066/F7K935KT',
     'highlight': 'SCIENCE DATABASE. DOI:10.5066/F7K935KT. BRANDT SA. 2000. CLASSIFICATION OF GEOMORPHOLOGICAL'
 	}]
@@ -171,11 +177,17 @@ Note that search and mention variables are objects that contain data and informa
 
   [{'xdd_id': '5c1c34751faed655488963fc',
     'pub_doi': '10.1016/J.FORPOL.2018.03.009',
+    'pub_title': 'Impact of market conditions on the effectiveness of payments for forest-based carbon sequestration',
+	'pub_date': 'July 2018',
+	'pub_journal': 'Forest Policy and Economics',
     'search_term': 'PAD-US',
     'highlight': 'THE PROTECTED AREAS DATABASE OF THE UNITED STATES (PAD-US) (USGS, 2013). MEAN SLOPE'
 	},
 	{'xdd_id': '5c1cd6271faed655488975f8',
      'pub_doi': '10.1016/J.BIOCON.2018.05.019',
+     'pub_title': 'Assessing threats of non-native species to native freshwater biodiversity: Conservation priorities for the United States',
+	 'pub_date': 'August 2018',
+	 'pub_journal': 'Biological Conservation',
      'search_term': 'PAD-US',
      'highlight': 'DATABASE OF THE UNITED STATES (PAD-US, VERSION 1.4) (DELLASALA ET AL., 2001; USGS,'
 	 }]
